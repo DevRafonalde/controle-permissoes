@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html th:replace="~{layout.html :: layout(~{::section})}">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+	    <section class="layout-content">
+	        <nav class="navbar navbar-expand-md bg-light">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+	            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+	                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+	                    <li class="nav-item active">
+	                        <i class="fa-solid fa-caret-right fa-xl"></i>
+	                        <span>Cadastrar Perfis</span>
+	                    </li>
+	                </ul>
+	            </div>
+	            <a class="btn btn-primary btn-md" href="/perfis/listar" role="button">
+	                <span title="Listar" aria-hidden="true"><i class="fa-solid fa-table-list fa-xl"></i></span>
+	                <span>Listar Perfis</span>
+	            </a>
+	        </nav>
+	        <div class="container" id="cadastro">
+				<div th:replace="~{fragments/alert}"></div>
+	            <form th:action="${perfil.id == 0} ? @{/perfis/novoPerfil} : @{/perfis/editar}" th:object="${perfil}" method="POST">
+					<div th:replace="~{fragments/validacao :: validacao}"></div>
+	                <div class="form-row">
+	                    <div class="form-group col-md-6">
+	                        <label for="nome">Nome do Perfil</label>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{nome}"/>
+	                    </div>
+	                    <div class="form-group col-md-4">
+	                        <label for="perfilPermissao">PerfilPermissao</label>
+	                        <select id="perfilPermissao" class="form-select" th:field="*{perfilPermissao}">
+	                            <option value="">Selecione</option>
+	                            <option th:each="d : ${perfisPermissao}" th:value="${d.id}" th:text="${d.nome}">Opções</option>
+	                        </select>
+	                    </div>
+	                </div>
+					<hr class="my-1" style="opacity: 0;">
+					<input type="hidden" id="id" th:field="*{id}">
+	                <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+	            </form>
+	        </div>
+	    </section>
+	</body>
+</html>		

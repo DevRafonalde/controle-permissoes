@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html th:replace="~{layout.html :: layout(~{::section})}">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+	    <section class="layout-content">
+	        <nav class="navbar navbar-expand-md bg-light fixed-top" style="padding: var(--bs-navbar-padding-y) 5%;">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				</button>
+	            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+	                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+	                    <li class="nav-item active">
+	                        <i class="fa-solid fa-caret-right fa-xl"></i>
+	                        <span>Cadastrar Permissoes</span>
+	                    </li>
+	                </ul>
+	                <a class="btn btn-primary btn-md" href="/permissoes/listar" role="button">
+	                    <span title="Listar" aria-hidden="true"><i class="fa-solid fa-table-list fa-xl"></i></span>
+	                    <span>Listar Permissoes</span>
+	                </a>
+	            </div>
+	        </nav>
+			<div class="container" id="cadastro" style="padding-left: 10%;">
+				<div th:replace="~{fragments/alert}"></div>
+	            <form th:action="${permissao.id == 0} ? @{/permissoes/nova-permissao} : @{/permissoes/editar}" th:object="${permissao}" method="POST">
+					<div th:replace="~{fragments/validacao :: validacao}"></div>
+	                <div class="row">
+	                    <div class="col-md-6">
+	                        <label for="nome">Nome:</label>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Permissão" autofocus="autofocus" th:field="*{nome}"/>
+	                    </div>
+						<div class="col-md-6">
+							<label for="descricao">Descrição:</label>
+							<input type="text" class="form-control" id="descricao" placeholder="Descrição" autofocus="autofocus" th:field="*{descricao}"/>
+						</div>
+						<div class="col-md-6">
+							<label for="sistema">Sistema:</label>
+							<select id="sistema" class="form-select" th:field="*{sistema}">
+								<option value="">Selecione...</option>
+								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label for="permissaoSuperior">Permissão Superior:</label>
+							<select id="permissaoSuperior" class="form-select" th:field="*{idPermissaoSuperior}">
+								<option value="">Selecione...</option>
+								<option th:each="p : ${listaPermissoesCadastro}" th:value="${p.id}" th:text="${p.nome}">Permissão Superior</option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label for="mnemonico">Nome:</label>
+							<input type="text" class="form-control" id="mnemonico" placeholder="Mnemônico" autofocus="autofocus" th:field="*{mnemonico}"/>
+						</div>
+	                </div>
+					<hr class="my-1" style="opacity: 0;">
+					<input type="hidden" id="id" th:field="*{id}">
+	                <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+	            </form>
+	        </div>
+	    </section>
+	</body>
+</html>

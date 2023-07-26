@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "tbl_Permissao")
 @NoArgsConstructor
@@ -20,7 +22,7 @@ public class Permissao {
 
     @ManyToOne
     @JoinColumn(name = "ID_Sistema")
-    @Getter @Setter
+    @Setter
     private Sistema sistema;
 
     @Column(name = "Nome")
@@ -46,4 +48,13 @@ public class Permissao {
     @Column(name = "Mnemonico")
     @Getter @Setter
     private String mnemonico;
+
+    public Sistema getSistema() {
+        if (Objects.isNull(sistema)) {
+            Sistema sistemaVazio = new Sistema();
+            sistemaVazio.setNome("");
+            return sistemaVazio;
+        }
+        return sistema;
+    }
 }

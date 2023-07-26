@@ -28,20 +28,28 @@
 					<table class="table table-striped table-hover">
 						<thead>
 							<tr>
-								<th>#</th>
-								<th>Sistema</th>
-								<th>
-									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=invertida)}"><span><i class="fa-solid fa-sort-up"></i></span></a>
-									Permissao
-									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=normal)}"><span><i class="fa-solid fa-sort-down"></i></span></a>
+								<th scope="col" style="width: 5%;">
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=invertida, atributo=id)}"><span><i class="fa-solid fa-sort-up"></i></span></a>
+									#
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=normal, atributo=id)}"><span><i class="fa-solid fa-sort-down"></i></span></a>
 								</th>
-								<th>Descrição</th>
-								<th>Ação</th>
+								<th scope="col">
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=invertida, atributo=sistema)}"><span><i class="fa-solid fa-sort-up"></i></span></a>
+									Sistema
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=normal, atributo=sistema)}"><span><i class="fa-solid fa-sort-down"></i></span></a>
+								</th>
+								<th scope="col">
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=invertida, atributo=nome)}"><span><i class="fa-solid fa-sort-up"></i></span></a>
+									Permissao
+									<a class="" th:href="@{/permissoes/listar(pagina=${paginaPermissoes.pagina}, direcao=normal, atributo=nome)}"><span><i class="fa-solid fa-sort-down"></i></span></a>
+								</th>
+								<th scope="col">Descrição</th>
+								<th scope="col" style="width: 10%;">Ação</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="p : ${paginaPermissoes.registros}">
-								<td th:text="${p.id}">Id</td>
+								<th scope="row" th:text="${p.id}">Id</th>
 								<td th:text="${p.sistema.nome}">Sistema</td>
 								<td th:text="${p.nome}">Nome</td>
 								<td th:text="${p.descricao}">Descrição</td>

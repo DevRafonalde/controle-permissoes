@@ -45,11 +45,19 @@ public class PerfilController {
 //    }
 
     @GetMapping("/listar")
-    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao) {
+    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao, @RequestParam("atributo") Optional<String> atributo) {
         List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
         int paginaAtual = pagina.orElse(1);
         String ordem = direcao.orElse("normal");
-        Paginacao<Perfil> paginaPerfis = buscaPaginada(paginaAtual, ordem, perfis);
+        String baseOrdenacao = atributo.orElse("nome");
+
+        Paginacao<Perfil> paginaPerfis;
+
+        if (baseOrdenacao.equalsIgnoreCase("id")) {
+            paginaPerfis = buscaPaginadaId(paginaAtual, ordem, perfis);
+        } else {
+            paginaPerfis = buscaPaginadaNome(paginaAtual, ordem, perfis);
+        }
 
         modelMap.addAttribute("paginaPerfis", paginaPerfis);
         return "perfis/lista";
@@ -164,14 +172,33 @@ public class PerfilController {
         return perfilRepository.findById(id);
     }
 
-    public Paginacao<Perfil> buscaPaginada(int pagina, String direcao, List<Perfil> perfis) {
+    public Paginacao<Perfil> buscaPaginadaNome(int pagina, String direcao, List<Perfil> perfis) {
         int tamanho = 30;
         int inicio = (pagina - 1) * tamanho;
+
         if (direcao.equalsIgnoreCase("normal")) {
             perfis.sort(Comparator.comparing(Perfil::getNome));
         } else {
             perfis.sort(Collections.reverseOrder(Comparator.comparing(Perfil::getNome)));
         }
+
+        List<Perfil> paginaPerfis = perfis.stream().filter(perfil -> perfis.indexOf(perfil) >= inicio).limit(tamanho).toList();
+
+        int totalPaginas = (perfis.size() + (tamanho - 1)) / tamanho;
+
+        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaPerfis);
+    }
+
+    public Paginacao<Perfil> buscaPaginadaId(int pagina, String direcao, List<Perfil> perfis) {
+        int tamanho = 30;
+        int inicio = (pagina - 1) * tamanho;
+
+        if (direcao.equalsIgnoreCase("normal")) {
+            perfis.sort(Comparator.comparing(Perfil::getId));
+        } else {
+            perfis.sort(Collections.reverseOrder(Comparator.comparing(Perfil::getId)));
+        }
+
         List<Perfil> paginaPerfis = perfis.stream().filter(perfil -> perfis.indexOf(perfil) >= inicio).limit(tamanho).toList();
 
         int totalPaginas = (perfis.size() + (tamanho - 1)) / tamanho;
@@ -194,7 +221,7 @@ public class PerfilController {
         modelMap.addAttribute("sucesso", "Perfil deletado com sucesso.");
 
         List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
-        Paginacao<Perfil> paginaPerfis = buscaPaginada(1, "normal", perfis);
+        Paginacao<Perfil> paginaPerfis = buscaPaginadaNome(1, "normal", perfis);
 
         modelMap.addAttribute("paginaPerfis", paginaPerfis);
 
@@ -207,13 +234,6 @@ public class PerfilController {
             Perfil perfil = perfilRepository.findById(perfilPermissao.getId()).orElse(null);
             List<Integer> idsPermissoes = perfilPermissaoRepository.findByPerfil(perfil).stream().filter(p -> Objects.nonNull(p.getPerfil())).map(u -> u.getPermissao().getId()).toList();
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAllById(idsPermissoes);
-            for (Permissao permissao : permissoes) {
-                if (Objects.isNull(permissao.getSistema())){
-                    Sistema sistemaVazio = new Sistema();
-                    sistemaVazio.setNome("");
-                    permissao.setSistema(sistemaVazio);
-                }
-            }
             return permissoes.stream().sorted(Comparator.comparing(Permissao::getNome)).toList();
         }
         List<Permissao> todasPermissoes = (List<Permissao>) permissaoRepository.findAll();

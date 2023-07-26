@@ -57,12 +57,23 @@ public class PermissaoController {
     }
 
     @GetMapping("/listar")
-    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao) {
+    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao, @RequestParam("atributo") Optional<String> atributo) {
         int paginaAtual = pagina.orElse(1);
         String ordem = direcao.orElse("normal");
+        String baseOrdenacao = atributo.orElse("nome");
+
         List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
         ultimoId = permissoes.get(permissoes.size() - 1).getId();
-        Paginacao<Permissao> paginaPermissoes = buscaPaginada(paginaAtual, ordem, permissoes);
+
+        Paginacao<Permissao> paginaPermissoes;
+
+        if (baseOrdenacao.equalsIgnoreCase("id")) {
+            paginaPermissoes = buscaPaginadaId(paginaAtual, ordem, permissoes);
+        } else if (baseOrdenacao.equalsIgnoreCase("sistema")) {
+            paginaPermissoes = buscaPaginadaSistema(paginaAtual, ordem, permissoes);
+        } else {
+            paginaPermissoes = buscaPaginadaNome(paginaAtual, ordem, permissoes);
+        }
 
         modelMap.addAttribute("paginaPermissoes", paginaPermissoes);
         return "permissoes/lista";
@@ -135,13 +146,13 @@ public class PermissaoController {
         modelMap.addAttribute("sucesso", "Permissão deletada com sucesso.");
 
         List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-        Paginacao<Permissao> paginaPermissoes = buscaPaginada(1, "normal", permissoes);
+        Paginacao<Permissao> paginaPermissoes = buscaPaginadaNome(1, "normal", permissoes);
 
         modelMap.addAttribute("paginaPermissoes", paginaPermissoes);
         return "permissoes/lista";
     }
 
-    public Paginacao<Permissao> buscaPaginada(int pagina, String direcao, List<Permissao> permissoes) {
+    public Paginacao<Permissao> buscaPaginadaNome(int pagina, String direcao, List<Permissao> permissoes) {
         int tamanho = 30;
         int inicio = (pagina - 1) * tamanho;
         if (direcao.equalsIgnoreCase("normal")) {
@@ -150,13 +161,37 @@ public class PermissaoController {
             permissoes.sort(Collections.reverseOrder(Comparator.comparing(Permissao::getNome)));
         }
         List<Permissao> paginaPerfis = permissoes.stream().filter(permissao -> permissoes.indexOf(permissao) >= inicio).limit(tamanho).toList();
-        for (Permissao permissao : paginaPerfis) {
-            if (Objects.isNull(permissao.getSistema())){
-                Sistema sistemaVazio = new Sistema();
-                sistemaVazio.setNome("");
-                permissao.setSistema(sistemaVazio);
-            }
+
+        int totalPaginas = (permissoes.size() + (tamanho - 1)) / tamanho;
+
+        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaPerfis);
+    }
+
+    public Paginacao<Permissao> buscaPaginadaId(int pagina, String direcao, List<Permissao> permissoes) {
+        int tamanho = 30;
+        int inicio = (pagina - 1) * tamanho;
+        if (direcao.equalsIgnoreCase("normal")) {
+            permissoes.sort(Comparator.comparing(Permissao::getId));
+        } else {
+            permissoes.sort(Collections.reverseOrder(Comparator.comparing(Permissao::getId)));
         }
+        List<Permissao> paginaPerfis = permissoes.stream().filter(permissao -> permissoes.indexOf(permissao) >= inicio).limit(tamanho).toList();
+
+        int totalPaginas = (permissoes.size() + (tamanho - 1)) / tamanho;
+
+        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaPerfis);
+    }
+
+    public Paginacao<Permissao> buscaPaginadaSistema(int pagina, String direcao, List<Permissao> permissoes) {
+        int tamanho = 30;
+        int inicio = (pagina - 1) * tamanho;
+        if (direcao.equalsIgnoreCase("normal")) {
+            permissoes.sort(Comparator.comparing(permissao -> permissao.getSistema().getNome()));
+        } else {
+            permissoes.sort(Collections.reverseOrder(Comparator.comparing(permissao -> permissao.getSistema().getNome())));
+        }
+        List<Permissao> paginaPerfis = permissoes.stream().filter(permissao -> permissoes.indexOf(permissao) >= inicio).limit(tamanho).toList();
+
 
         int totalPaginas = (permissoes.size() + (tamanho - 1)) / tamanho;
 

@@ -3,6 +3,8 @@ package br.com.dev1risjc.ControlePermissoes.models.entities.orm;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "tbl_Perfil")
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class Perfil {
 
     @ManyToOne
     @JoinColumn(name = "ID_Sistema")
-    @Getter @Setter
+    @Setter
     private Sistema sistema;
 
     @Column(name = "Nome")
@@ -32,4 +34,13 @@ public class Perfil {
     @Column(name = "Excluido")
     @Getter @Setter
     private Boolean excluido;
+
+    public Sistema getSistema() {
+        if (Objects.isNull(sistema)) {
+            Sistema sistemaVazio = new Sistema();
+            sistemaVazio.setNome("");
+            return sistemaVazio;
+        }
+        return sistema;
+    }
 }

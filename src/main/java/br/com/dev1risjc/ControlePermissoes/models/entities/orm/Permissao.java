@@ -1,9 +1,7 @@
 package br.com.dev1risjc.ControlePermissoes.models.entities.orm;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.Objects;
 
@@ -15,7 +13,6 @@ import java.util.Objects;
 public class Permissao {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     @Getter @Setter
     private Integer id;

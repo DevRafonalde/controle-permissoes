@@ -4,53 +4,110 @@
 		<meta charset="UTF-8"/>
 	</head>
 	<body>
-			<section class="layout-content">
-				<nav class="navbar navbar-expand-md bg-light">
-					<div class="collapse navbar-collapse" id="navbarsExampleDefault">
-						<ul class="navbar-nav me-auto mb-2 mb-md-0">
-							<li class="nav-item active">
-								<i class="fa-solid fa-caret-right fa-xl"></i><span> Home</span>
-							</li>
-						</ul>
-					</div>
-				</nav>
-				<div class="container">
-					<div id="list-home" class="row">
-						<div class="col-4">
-							<div class="list-group" id="list-tab" role="tablist">
-								<a class="list-group-item list-group-item-action active" id="list-spring-boot-list" data-toggle="list" href="#spring-boot" role="tab" aria-controls="spring-boot">Spring-Boot</a>
-								<a class="list-group-item list-group-item-action" id="list-sts-list" data-toggle="list" href="#sts" role="tab" aria-controls="sts">Spring Tool Suite</a>
-								<a class="list-group-item list-group-item-action" id="list-thymeleaf-list" data-toggle="list" href="#thymeleaf" role="tab" aria-controls="thymeleaf">Thymeleaf</a>
-								<a class="list-group-item list-group-item-action" id="list-webjars-list" data-toggle="list" href="#webjars" role="tab" aria-controls="webjars">WebJars</a>
-								<a class="list-group-item list-group-item-action" id="list-hibernate-list" data-toggle="list" href="#hibernate" role="tab" aria-controls="hibernate">Hibernate</a>
-								<a class="list-group-item list-group-item-action" id="list-bootstrap-list" data-toggle="list" href="#bootstrap" role="tab" aria-controls="bootstrap">Bootstrap 4</a>
-							</div>
+		<section class="layout-content">
+			<div class="container" style="padding-left: 10%;">
+				<div id="list-home" class="row">
+					<div class="col-4">
+						<div class="list-group" id="list-tab" role="tablist">
+							<a class="list-group-item list-group-item-action active" id="apresentacao-si-admin" data-bs-toggle="list" href="#si-admin" role="tab" aria-controls="spring-boot">SI-Admin</a>
+							<a class="list-group-item list-group-item-action" id="manual-uso-permissoes" data-bs-toggle="list" href="#permissoes" role="tab" aria-controls="sts">Uso das permissões</a>
+							<a class="list-group-item list-group-item-action" id="manual-uso-perfis" data-bs-toggle="list" href="#perfis" role="tab" aria-controls="thymeleaf">Uso dos perfis</a>
+							<a class="list-group-item list-group-item-action" id="manual-uso-usuarios" data-bs-toggle="list" href="#usuarios" role="tab" aria-controls="webjars">Uso dos usuários</a>
 						</div>
-						<div class="col-8">
-							<div class="tab-content" id="nav-tabContent">
-								<div class="tab-pane fade show active" id="spring-boot" role="tabpanel" aria-labelledby="list-spring-boot-list">
-									<a href="https://projects.spring.io/spring-boot/">Spring Boot</a> makes it easy to create stand-alone, production-grade Spring based Applications that you can "just run". We take an opinionated view of the Spring platform and third-party libraries so you can get started with minimum fuss. Most Spring Boot applications need very little Spring configuration.
-								</div>
-								<div class="tab-pane fade" id="sts" role="tabpanel" aria-labelledby="list-sts-list">
-									The <a href="https://spring.io/tools">Spring Tool Suite</a> is an Eclipse-based development environment that is customized for developing Spring applications. It provides a ready-to-use environment to implement, debug, run, and deploy your Spring applications, including integrations for Pivotal tc Server, Pivotal Cloud Foundry, Git, Maven, AspectJ, and more.
-								</div>
-								<div class="tab-pane fade" id="thymeleaf" role="tabpanel" aria-labelledby="list-thymeleaf-list">
-									<a href="http://www.thymeleaf.org/">Thymeleaf</a> is a modern server-side Java template engine for both web and standalone environments. With modules for Spring Framework, a host of integrations with your favourite tools, and the ability to plug in your own functionality, Thymeleaf is ideal for modern-day HTML5 JVM web development — although there is much more it can do.
-								</div>
-								<div class="tab-pane fade" id="webjars" role="tabpanel" aria-labelledby="list-webjars-list">
-									<a href="https://www.webjars.org/">WebJars</a> are client-side web libraries (e.g. jQuery ; Bootstrap) packaged into JAR (Java Archive) files.
-								</div>
-								<div class="tab-pane fade" id="hibernate" role="tabpanel" aria-labelledby="list-hibernate-list">
-									<a href="http://hibernate.org/orm/">Hibernate ORM</a> enables developers to more easily write applications whose data outlives the application process. As an Object/Relational Mapping (ORM) framework, Hibernate is concerned with data persistence as it applies to relational databases (via JDBC). <br/>
-									In addition to its own "native" API, Hibernate is also an implementation of the Java Persistence API (JPA) specification. As such, it can be easily used in any environment supporting JPA including Java SE applications, Java EE application servers, Enterprise OSGi containers, etc.
-								</div>
-								<div class="tab-pane fade" id="bootstrap" role="tabpanel" aria-labelledby="list-bootstrap-list">
-									<a href="https://getbootstrap.com/">Bootstrap</a> is an open source toolkit for developing with HTML, CSS, and JS. Quickly prototype your ideas or build your entire app with our Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful plugins built on jQuery.
-								</div>
+					</div>
+					<div class="col-8">
+						<div class="tab-content" id="nav-tabContent">
+							<div class="tab-pane fade show active" id="si-admin" role="tabpanel" aria-labelledby="apresentacao-si-admin">
+								A aplicação "SI-Admin" é um sistema de gerenciamento de permissões e acesso que foi projetado para garantir a segurança e o controle preciso de informações no ambiente de trabalho. Seu propósito principal é permitir que o cartório tenha um controle granular sobre quais funcionalidades e dados cada usuário pode acessar.<br>
+								<br>
+								Neste sistema, existem três principais entidades:<br>
+								<br>
+								1. <strong>Usuários:</strong> Representam as pessoas individuais que fazem parte da organização. Cada usuário possui um identificador único e é autenticado no sistema por meio de credenciais específicas, sua senha.<br>
+								<br>
+								2. <strong>Perfis:</strong> Os perfis são conjuntos predefinidos de permissões que determinam as ações e os recursos que um usuário pode acessar dentro do sistema. Cada perfil é cuidadosamente configurado para refletir um papel ou responsabilidade específica dentro da organização. Por exemplo, pode haver perfis como "Administrador", "Funcionário", "Gerente de Projeto" etc.<br>
+								<br>
+								3. <strong>Permissões:</strong> As permissões são atributos que definem as ações que um usuário pode realizar em relação a recursos específicos. Esses recursos podem incluir funcionalidades da aplicação, dados ou outros ativos digitais. Exemplos de permissões incluem "Leitura de Documentos", "Escrita em Bancos de Dados", "Gerenciamento de Usuários" etc.<br>
+								<br>
+								A arquitetura de controle de permissões do SI-Admin funciona da seguinte forma:<br>
+								<br>
+								- Cada usuário é associado a um ou mais perfis. Essa associação permite que o usuário herde todas as permissões concedidas por esses perfis.<br>
+								- A combinação de perfis associados a um usuário define o conjunto completo de permissões disponíveis para aquele usuário. Isso garante que cada indivíduo tenha acesso apenas às funcionalidades e aos dados relevantes para sua função dentro da organização.<br>
+								<br>
+								Os administradores do SI-Admin têm total controle sobre os perfis e permissões. Eles podem criar novos perfis para atender às necessidades específicas da organização, bem como personalizar permissões individuais dentro desses perfis. Além disso, eles podem adicionar ou remover usuários de perfis conforme necessário, permitindo um gerenciamento flexível e ágil das autorizações.<br>
+								<br>
+								Essa abordagem cuidadosamente planejada para controle de acesso fornece uma camada adicional de segurança, evitando que usuários não autorizados acessem informações confidenciais ou executem ações que não estão dentro de sua alçada. Ao garantir que apenas as pessoas certas tenham acesso a informações críticas, o SI-Admin contribui para a proteção dos ativos digitais e a integridade das operações organizacionais.<br>
+								<br>
+
+							</div>
+							<div class="tab-pane fade" id="permissoes" role="tabpanel" aria-labelledby="manual-uso-permissoes">
+								A entidade "Permissao" é responsável por representar as diferentes permissões que podem ser atribuídas a perfis de usuários. Essas permissões definem quais ações e recursos um perfil pode acessar dentro do sistema.<br>
+								<br>
+								<strong>Criando uma Nova Permissão:</strong><br>
+								Para criar uma nova permissão, começamos definindo um nome significativo para identificar essa permissão específica. Em seguida, adicionamos uma descrição que detalha o que essa permissão permite realizar no sistema.<br>
+								<br>
+								<strong>Associando a Permissão a um Sistema:</strong><br>
+								Cada permissão deve ser associada a um sistema específico. Isso permite que a permissão seja aplicada somente onde for relevante.<br>
+								<br>
+								<strong>Permissões Hierárquicas:</strong><br>
+								A entidade "Permissao" também suporta permissões hierárquicas. Cada permissão pode ter uma permissão superior associada a ela, o que cria uma estrutura hierárquica de permissões. Essa abordagem permite criar dependências e restrições para ações mais avançadas, garantindo que sejam executadas apenas se a permissão superior for concedida.<br>
+								<br>
+								<strong>Mnemônico:</strong><br>
+								O atributo mnemonico é outro aspecto importante da entidade Permissao. O mnemônico é uma representação abreviada ou código curto que pode ser associado a uma permissão. Ele é útil para identificar rapidamente a permissão de forma concisa e eficiente, especialmente quando se lida com um grande número de permissões diferentes.<br>
+								<br>
+								<strong>Excluindo uma Permissão:</strong><br>
+								Caso uma permissão precise ser temporariamente desativada, podemos removê-lo do sistema entrando na página de listagem de permissões e clicando no botão de exclusão (<span aria-hidden="true" class="btn btn-danger btn-sm"><i class="fa-regular fa-circle-xmark"></i></span>). Isso impede que os perfis associados à permissão a utilizem.<br>
+								<br>
+								<strong>Benefícios da Manipulação de Permissões:</strong><br>
+								Ao utilizar a entidade "Permissao", nosso sistema ganha uma flexibilidade significativa no controle de acesso. Podemos definir permissões específicas para ações precisas e criar dependências hierárquicas para garantir uma operação mais segura e organizada.<br>
+								<br>
+								Em resumo, a entidade "Permissao" é um componente crucial do nosso sistema de controle de acesso. Ela nos permite criar, editar e gerenciar as permissões concedidas aos perfis de usuários, definindo quais ações e recursos estão disponíveis para cada perfil. Dessa forma, garantimos que apenas as ações necessárias sejam realizadas e mantemos o ambiente seguro e bem estruturado.<br>
+								<br>
+							</div>
+							<div class="tab-pane fade" id="perfis" role="tabpanel" aria-labelledby="manual-uso-perfis">
+								A entidade "Perfil" representa um tipo de papel ou função dentro do nosso sistema. Esses perfis são utilizados para controlar o que cada usuário pode fazer e acessar.<br>
+								<br>
+								<strong>Criando um Novo Perfil:</strong><br>
+								Para criar um novo perfil, acesse a página de cadastro para preencher o formulário de criação. Primeiro definimos um nome para identificá-lo, em seguida, adicionamos uma descrição que explica suas responsabilidades e permissões. Cada perfil deve ser associado a um sistema específico, garantindo que suas permissões sejam aplicadas apenas onde são necessárias.<br>
+								<br>
+								<strong>Editando um Perfil Existente:</strong><br>
+								Se precisarmos modificar as informações de um perfil, podemos editar seu nome, descrição ou a qual sistema ele está associado entrando na página de listagem de perfis e clicando no botão de edição (<span title="Editar" aria-hidden="true" class="btn btn-info btn-sm"><i class="fa-solid fa-pencil"></i></span>). Essas alterações garantem que os perfis se adaptem às necessidades em constante mudança do nosso sistema e da organização.<br>
+								<br>
+								<strong>Excluindo um Perfil:</strong><br>
+								Caso um perfil não seja mais necessário, podemos removê-lo do sistema entrando na página de listagem de perfis e clicando no botão de exclusão (<span aria-hidden="true" class="btn btn-danger btn-sm"><i class="fa-regular fa-circle-xmark"></i></span>). Isso garantirá que os usuários não possam mais ser associados a esse perfil, mantendo a integridade do controle de acesso.<br>
+								<br>
+								<strong>Associando Perfis aos Usuários:</strong><br>
+								Para controlar o acesso de cada usuário, associamos um ou mais perfis a eles. Cada perfil contém um conjunto específico de permissões que definem quais partes do sistema o usuário pode utilizar. Ao associar múltiplos perfis, podemos personalizar o acesso para atender às funções específicas de cada usuário.<br>
+								<br>
+								<strong>Benefícios da Manipulação de Perfis:</strong><br>
+								Ao utilizar a entidade `Perfil`, nosso sistema ganha uma camada de segurança, garantindo que cada usuário possa acessar apenas as funcionalidades e informações necessárias para realizar suas tarefas. Isso previne o acesso indevido a dados sensíveis e protege a privacidade das informações.<br>
+								Em resumo, a entidade `Perfil` desempenha um papel fundamental no controle de acesso do nosso sistema. Ela nos permite criar, editar e excluir diferentes perfis para personalizar as permissões de cada usuário, garantindo uma operação segura e organizada do sistema como um todo.<br>
+								<br>
+							</div>
+							<div class="tab-pane fade" id="usuarios" role="tabpanel" aria-labelledby="manual-uso-usuarios">
+								A entidade "Usuario" representa os indivíduos que têm acesso ao nosso sistema. Cada usuário é identificado por um identificador único e possui diversas informações que contribuem para o controle e a personalização de suas interações no sistema.<br>
+								<br>
+								<strong>Nome Completo e Nome Amigável:</strong><br>
+								O atributo "nomeCompleto" armazena o nome completo do usuário, enquanto o atributo "NomeAmigavel" permite que um nome mais amigável ou apelido seja associado ao usuário. Essa abordagem ajuda a identificar e diferenciar os usuários de maneira clara e personalizada.<br>
+								<br>
+								<strong>Nome de Usuário e Senha:</strong><br>
+								Os atributos "nomeUser" e "senhaUser" são utilizados para armazenar o nome de usuário e a senha de cada usuário, respectivamente. Essas informações são fundamentais para autenticar o usuário no sistema e garantir que apenas usuários autorizados tenham acesso.<br>
+								<br>
+								<strong>Usuário Caixa Virtual:</strong><br>
+								O atributo "caixaVirtual" permite que determinemos se o usuário tem acesso à "caixa virtual".<br>
+								<br>
+								<strong>Observação:</strong><br>
+								O atributo "observacao" oferece um espaço para adicionar comentários ou informações adicionais sobre cada usuário. Isso pode ser útil para incluir detalhes relevantes sobre o usuário que podem auxiliar na gestão e no controle de acesso.<br>
+								<br>
+								<strong>Benefícios da Entidade "Usuario":</strong><br>
+								A entidade "Usuario" nos permite gerenciar de forma individualizada as informações e permissões de cada usuário em nosso sistema. Com essa estrutura, podemos autenticar e personalizar a experiência de cada usuário, garantindo que ele tenha acesso apenas ao que é necessário e relevante para suas responsabilidades e funções.<br>
+								<br>
+								Em resumo, a entidade "Usuario" é uma parte fundamental do nosso sistema de controle de acesso. Ela nos permite armazenar, autenticar e personalizar as interações de cada usuário, além de controlar seu acesso a recursos específicos e manter suas informações de forma organizada e segura.<br>
+								<br>
 							</div>
 						</div>
 					</div>
 				</div>
-			</section>
+			</div>
+		</section>
 	</body>
 </html>

@@ -104,6 +104,7 @@ public class PermissaoController {
         }
         if (Objects.isNull(ultimoId)) {
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
+            permissoes.sort(Comparator.comparingInt(Permissao::getId));
             ultimoId = permissoes.get(permissoes.size() - 1).getId();
         }
         ultimoId++;

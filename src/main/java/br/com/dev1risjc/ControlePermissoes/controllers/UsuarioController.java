@@ -85,7 +85,6 @@ public class UsuarioController {
             }
         }
 
-
         List<Perfil> perfis = modeloCadastroUsuarioPerfil.getPerfisUsuario();
         for (Perfil perfil : perfis) {
             UsuarioPerfil usuarioPerfil = new UsuarioPerfil();

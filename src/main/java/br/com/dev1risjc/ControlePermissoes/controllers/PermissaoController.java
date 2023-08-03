@@ -4,15 +4,10 @@ import br.com.dev1risjc.ControlePermissoes.helpers.paginacao.Paginacao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema2;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilPermissaoRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PermissaoRepository;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.Sistemas2Repository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.SistemasRepository;
 import jakarta.validation.Valid;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -28,26 +23,13 @@ public class PermissaoController {
 
     private PermissaoRepository permissaoRepository;
     private SistemasRepository sistemasRepository;
-    private Sistemas2Repository sistemasRepository2;
     private PerfilPermissaoRepository perfilPermissaoRepository;
     private Integer ultimoId;
 
-    public PermissaoController(PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, @Lazy Sistemas2Repository sistemasRepository2, PerfilPermissaoRepository perfilPermissaoRepository) {
+    public PermissaoController(PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, PerfilPermissaoRepository perfilPermissaoRepository) {
         this.permissaoRepository = permissaoRepository;
         this.sistemasRepository = sistemasRepository;
-        this.sistemasRepository2 = sistemasRepository2;
         this.perfilPermissaoRepository = perfilPermissaoRepository;
-    }
-
-    @GetMapping("/teste")
-    public ResponseEntity teste() {
-        Sistema2 teste = sistemasRepository2.findById(15).orElse(null);
-
-//        teste.setNome("SI Integrador");
-
-        sistemasRepository2.delete(teste);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/cadastrar")

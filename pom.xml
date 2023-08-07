@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.dev1risjc</groupId>
 	<artifactId>ControlePermissoes</artifactId>
-	<version>20230726b</version>
+	<version>20230807a</version>
 	<name>ControlePermissoes</name>
 	<description>Aplicação para controle de permissões do cartório, substituindo o SI-Admin</description>
 	<properties>

@@ -48,7 +48,7 @@
 								<th scope="col">#</th>
 								<th scope="col">Permissão</th>
 								<th scope="col">
-									<button type="submit" name="addPermissao">Adicionar Permissão</button>
+									<button class="btn btn-success" type="submit" name="addPermissao">Adicionar Permissão</button>
 								</th>
 							</tr>
 							</thead>
@@ -56,13 +56,13 @@
 							<tr th:each="permissao,contagem : *{permissoesPerfil}">
 								<th scope="row" th:text="${contagem.count}">1</th>
 								<td>
-									<select th:field="*{permissoesPerfil[__${contagem.index}__]}">
+									<select th:field="*{permissoesPerfil[__${contagem.index}__]}" class="form-select">
 										<option value="">Selecione...</option>
 										<option th:each="p : ${permissoes}" th:value="${p.id}" th:text="${p.nome}"></option>
 									</select>
 								</td>
 								<td>
-									<button type="submit" name="removePermissao" th:value="${contagem.index}">Remover Permissão</button>
+									<button class="btn btn-danger" type="submit" name="removePermissao" th:value="${contagem.index}">Remover Permissão</button>
 								</td>
 							</tr>
 							</tbody>

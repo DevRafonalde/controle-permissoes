@@ -7,6 +7,7 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUs
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
+import br.com.dev1risjc.ControlePermissoes.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -26,12 +27,15 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioPerfilRepository usuarioPerfilRepository;
     private final PerfilRepository perfilRepository;
+    private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioRepository usuarioRepository, UsuarioPerfilRepository usuarioPerfilRepository, PerfilRepository perfilRepository) {
+    public UsuarioController(UsuarioRepository usuarioRepository, UsuarioPerfilRepository usuarioPerfilRepository, PerfilRepository perfilRepository, UsuarioService usuarioService) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioPerfilRepository = usuarioPerfilRepository;
         this.perfilRepository = perfilRepository;
+        this.usuarioService = usuarioService;
     }
+
     //    Adiciona o meu validador personalizado
 //    @InitBinder
 //    public void initBinder(WebDataBinder binder) {
@@ -45,61 +49,29 @@ public class UsuarioController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        List<Usuario> perfisAmigaveis = usuarios.stream()
-                .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
-                .toList();
-        perfisAmigaveis.forEach(
-                usuario -> usuario.setNomeAmigavel(
-                        usuario.getNomeAmigavel()
-                                .substring(0 , 1)
-                                .toUpperCase()
-                                .concat(usuario.getNomeAmigavel()
-                                        .substring(1)
-                                )
-                )
-        );
-        modelMap.addAttribute("usuarios", perfisAmigaveis);
+        List<Usuario> usuarios = usuarioService.findAll();
+        modelMap.addAttribute("usuarios", usuarios);
         return "usuarios/lista";
     }
 
     @GetMapping("/listar-especifico/{id}")
-    public String preListarEspecifico(@PathVariable Integer id, ModelMap modelMap) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
-        usuarioPerfil.setUsuario(usuario);
-        modelMap.addAttribute("usuarioPerfil", usuarioPerfil);
+    public String listarEspecifico(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroUsuarioPerfil usuario = usuarioService.listarEspecifico(id);
+        modelMap.addAttribute("usuario", usuario);
         return "usuarios/lista-especifica";
     }
 
     @PostMapping("/novo-usuario")
-    public String novoFuncionario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes) {
+    public String novoUsuario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "usuarios/cadastro";
         }
-        if (Objects.nonNull(modeloCadastroUsuarioPerfil.getUsuario().getId())) {
-            List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByUsuario(modeloCadastroUsuarioPerfil.getUsuario());
-            for (UsuarioPerfil usuarioPerfil : registrosExistentes) {
-                usuarioPerfilRepository.delete(usuarioPerfil);
-            }
-        }
 
-        List<Perfil> perfis = modeloCadastroUsuarioPerfil.getPerfisUsuario();
-        for (Perfil perfil : perfis) {
-            UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
-            usuarioPerfil.setUsuario(modeloCadastroUsuarioPerfil.getUsuario());
-            usuarioPerfil.getUsuario().setAtivo(true);
-            usuarioPerfil.setNegacao(false);
-            usuarioPerfil.setDataHora(LocalDateTime.now());
-            usuarioPerfil.setExcluido(false);
-            usuarioPerfil.setPerfil(perfil);
-            System.out.println(perfil.getNome());
-            usuarioPerfilRepository.save(usuarioPerfil);
-            System.out.println("Salvou");
-        }
+        ModeloCadastroUsuarioPerfil usuarioNovo = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
 
-        attributes.addFlashAttribute("sucesso", "Funcionário inserido com sucesso");
-        return "redirect:/usuarios/cadastrar";
+        attributes.addFlashAttribute("sucesso", "Usuário inserido com sucesso");
+        modelMap.addAttribute("usuario", usuarioNovo);
+        return "usuarios/lista-especifica";
     }
 
     @RequestMapping(value="/novo-usuario", params={"addPerfil"})
@@ -135,97 +107,38 @@ public class UsuarioController {
     }
 
     @PostMapping("/editar")
-    public String editar(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes) {
+    public String editar(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "usuarios/cadastro";
         }
-        Usuario usuarioMexido = modeloCadastroUsuarioPerfil.getUsuario();
-        usuarioMexido.setAtivo(true);
-        usuarioRepository.save(usuarioMexido);
-        List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByUsuario(modeloCadastroUsuarioPerfil.getUsuario());
-        for (UsuarioPerfil usuarioPerfil : registrosExistentes) {
-            usuarioPerfilRepository.delete(usuarioPerfil);
-        }
 
-        List<Perfil> perfis = modeloCadastroUsuarioPerfil.getPerfisUsuario();
-        for (Perfil perfil : perfis) {
-            UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
-            usuarioPerfil.setUsuario(modeloCadastroUsuarioPerfil.getUsuario());
-            usuarioPerfil.getUsuario().setAtivo(true);
-            usuarioPerfil.setNegacao(false);
-            usuarioPerfil.setDataHora(LocalDateTime.now());
-            usuarioPerfil.setExcluido(false);
-            usuarioPerfil.setPerfil(perfil);
-            usuarioPerfilRepository.save(usuarioPerfil);
-        }
+        ModeloCadastroUsuarioPerfil modeloRetorno = usuarioService.editar(modeloCadastroUsuarioPerfil);
 
         attributes.addFlashAttribute("sucesso", "Funcionário editado com sucesso");
-        return "redirect:/usuarios/listar-especifico/"+ usuarioMexido.getId();
+        modelMap.addAttribute("usuario", modeloRetorno);
+        return "usuarios/lista-especifica";
     }
 
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable Integer id, ModelMap modelMap) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuario).stream().map(UsuarioPerfil::getPerfil).toList();
-        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
-        modeloCadastroUsuarioPerfil.setUsuario(usuario);
-        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfisUsuario);
+        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.preEditar(id);
         modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
         return "usuarios/cadastro";
     }
 
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarPorId/{id}")
-    public Optional<Usuario> buscarPorId(@PathVariable Integer id) {
-        return usuarioRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarTodos")
-    public Iterable<Usuario> buscarTodos() {
-        return usuarioRepository.findAll();
-    }
-
     @GetMapping("/deletar/{id}")
     public String deletar(@PathVariable Integer id, ModelMap modelMap) {
-        Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
-        List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
-        if (!vinculosUsuario.isEmpty()) {
-            usuarioPerfilRepository.deleteAll(vinculosUsuario);
-        }
-        usuarioRepository.delete(usuarioDelete);
+
+        List<Usuario> usuariosAtivos = usuarioService.deletar(id);
+
         modelMap.addAttribute("sucesso", "Usuario deletado com sucesso.");
-
-        List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        List<Usuario> perfisAmigaveis = usuarios.stream()
-                .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
-                .toList();
-        perfisAmigaveis.forEach(
-                usuario -> usuario.setNomeAmigavel(
-                        usuario.getNomeAmigavel()
-                                .substring(0 , 1)
-                                .toUpperCase()
-                                .concat(usuario.getNomeAmigavel()
-                                        .substring(1)
-                                )
-                )
-        );
-
-        modelMap.addAttribute("usuarios", perfisAmigaveis);
+        modelMap.addAttribute("usuarios", usuariosAtivos);
 
         return "usuarios/lista";
     }
 
     @ModelAttribute("perfis")
     public List<Perfil> getPerfis(UsuarioPerfil usuarioPerfil) {
-        if (Objects.nonNull(usuarioPerfil.getId())){
-            Usuario usuario = usuarioRepository.findById(usuarioPerfil.getId()).orElse(null);
-            List<Integer> idsPerfis = usuarioPerfilRepository.findByUsuario(usuario).stream().filter(u -> Objects.nonNull(u.getPerfil())).map(u -> u.getPerfil().getId()).toList();
-            List<Perfil> perfis = (List<Perfil>) perfilRepository.findAllById(idsPerfis);
-            return perfis.stream().sorted(Comparator.comparing(perfil -> perfil.getSistema().getNome())).toList();
-        }
-        List<Perfil> todosPerfis = (List<Perfil>) perfilRepository.findAll();
-        todosPerfis.sort(Comparator.comparing(Perfil::getNome));
-        return todosPerfis;
+        return usuarioService.getPerfis(usuarioPerfil);
     }
 }

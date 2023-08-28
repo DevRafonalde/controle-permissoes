@@ -30,7 +30,7 @@ public class UsuarioPerfil {
 
     @Column(name = "Negacao")
     @Getter @Setter
-    private Boolean negacao;
+    private Boolean negacao = false;
 
     @Column(name = "DataHora", columnDefinition = "DATETIME")
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
@@ -39,5 +39,5 @@ public class UsuarioPerfil {
 
     @Column(name = "Excluido")
     @Getter @Setter
-    private Boolean excluido;
+    private Boolean excluido = false;
 }

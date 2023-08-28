@@ -151,30 +151,24 @@ public class UsuarioService {
         return modeloCadastroUsuarioPerfil;
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Usuario> buscarPorId(@PathVariable Integer id) {
-        return usuarioRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public Iterable<Usuario> buscarTodos() {
-        return usuarioRepository.findAll();
-    }
-
-    public String deletar(@PathVariable Integer id, ModelMap modelMap) {
+    public List<Usuario> deletar(Integer id) {
         Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(usuarioDelete)) {
+            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
+        }
+
         List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
         if (!vinculosUsuario.isEmpty()) {
             usuarioPerfilRepository.deleteAll(vinculosUsuario);
         }
         usuarioRepository.delete(usuarioDelete);
-        modelMap.addAttribute("sucesso", "Usuario deletado com sucesso.");
 
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        List<Usuario> perfisAmigaveis = usuarios.stream()
+        List<Usuario> usuariosAtivos = usuarios.stream()
                 .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
                 .toList();
-        perfisAmigaveis.forEach(
+        usuariosAtivos.forEach(
                 usuario -> usuario.setNomeAmigavel(
                         usuario.getNomeAmigavel()
                                 .substring(0 , 1)
@@ -185,12 +179,9 @@ public class UsuarioService {
                 )
         );
 
-        modelMap.addAttribute("usuarios", perfisAmigaveis);
-
-        return "usuarios/lista";
+        return usuariosAtivos;
     }
 
-    @ModelAttribute("perfis")
     public List<Perfil> getPerfis(UsuarioPerfil usuarioPerfil) {
         if (Objects.nonNull(usuarioPerfil.getId())){
             Usuario usuario = usuarioRepository.findById(usuarioPerfil.getId()).orElse(null);

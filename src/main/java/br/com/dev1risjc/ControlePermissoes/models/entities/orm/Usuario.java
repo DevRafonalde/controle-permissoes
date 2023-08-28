@@ -50,7 +50,7 @@ public class Usuario {
 
     @Column(name = "Ativo")
     @Getter @Setter
-    private Boolean ativo;
+    private Boolean ativo = true;
 
     @Column(name = "CaixaVirtual")
     @Getter @Setter

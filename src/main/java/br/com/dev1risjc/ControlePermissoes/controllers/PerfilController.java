@@ -38,11 +38,6 @@ public class PerfilController {
         return "perfis/cadastro";
     }
 
-//    @ModelAttribute("perfisPermissao")
-//    public List<PerfilPermissao> listaPerfisPermissoes() {
-//        return (List<PerfilPermissao>) perfilPermissaoRepository.findAll();
-//    }
-
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
         List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();

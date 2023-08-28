@@ -1,20 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
       <meta charset="UTF-8">
   </head>
   <body>
-    <header th:fragment="cabecalho">
-      <nav class="navbar navbar-inverse navbar navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="btn btn-dark navbar-toggle pull-left">
-              <i class="fa-solid fa-bars fa-xl"></i>
-            </button>
-            <a class="navbar-brand " href="#">SI-Admin</a>
+    <header th:fragment="cabecalho" class="p-3 mb-3 border-bottom">
+<!--      <nav class="navbar navbar-inverse navbar navbar-dark bg-dark fixed-top">-->
+<!--        <div class="container-fluid">-->
+<!--          <div class="navbar-header">-->
+<!--            <button type="button" class="btn btn-dark navbar-toggle pull-left">-->
+<!--              <i class="fa-solid fa-bars fa-xl"></i>-->
+<!--            </button>-->
+<!--            <a class="navbar-brand " href="#">SI-Admin</a>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </nav>-->
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <a class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none navbar-brand" th:href="@{/}">SI - Admin</a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li class="nav-link px-2 link-dark">
+                <a class="nav-link text-dark" th:href="@{/}">Home</a>
+              </li>
+              <li class="nav-link px-2 link-dark dropdown">
+                <a href="#" class="nav-link text-dark text-decoration-none dropdown-toggle" id="dropdownPermissoes" data-bs-toggle="dropdown" data-bs-target="#itensPermissoes" aria-expanded="false">Permissões</a>
+                <ul class="dropdown-menu text-small" aria-labelledby="dropdownPermissoes" id="itensPermissoes">
+                  <li>
+                    <a class="dropdown-item" th:href="@{/permissoes/listar}">Listar</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/permissoes/cadastrar}">Cadastrar</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-link px-2 link-dark dropdown">
+                <a href="#" class="nav-link text-dark text-decoration-none dropdown-toggle" id="dropdownPerfis" data-bs-toggle="dropdown" data-bs-target="#itensPerfis" aria-expanded="false">Perfis</a>
+                <ul class="dropdown-menu text-small" aria-labelledby="dropdownPerfis" id="itensPerfis">
+                  <li>
+                    <a class="dropdown-item" th:href="@{/perfis/listar}">Listar</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/perfis/cadastrar}">Cadastrar</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-link px-2 link-dark dropdown">
+                <a href="#" class="nav-link text-dark text-decoration-none dropdown-toggle" id="dropdownUsuarios" data-bs-toggle="dropdown" data-bs-target="#itensUsuarios" aria-expanded="false">Usuários</a>
+                <ul class="dropdown-menu text-small" aria-labelledby="dropdownUsuarios" id="itensUsuarios">
+                  <li>
+                    <a class="dropdown-item" th:href="@{/usuarios/listar}">Listar</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/usuarios/cadastrar}">Cadastrar</a>
+                  </li>
+                </ul>
+<!--                <div class="dropdown text-end">-->
+<!--                  <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownPerfil" data-bs-toggle="dropdown" data-bs-target="#itensPerfil" aria-expanded="false">NOME</a>-->
+<!--                  <ul class="dropdown-menu text-small" aria-labelledby="dropdownPerfil" id="itensPerfil">-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item" asp-controller="AlterarSenha" asp-action="Index">Alterar Senha</a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item" asp-controller="Login" asp-action="Logout">Sair</a>-->
+<!--                    </li>-->
+<!--                  </ul>-->
+<!--                </div>-->
+              </li>
+            </ul>
           </div>
         </div>
-      </nav>
+      </div>
     </header>
   </body>
 </html>

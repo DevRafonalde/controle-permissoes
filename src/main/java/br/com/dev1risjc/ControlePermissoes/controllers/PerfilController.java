@@ -1,6 +1,5 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.helpers.paginacao.Paginacao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
@@ -45,21 +44,9 @@ public class PerfilController {
 //    }
 
     @GetMapping("/listar")
-    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao, @RequestParam("atributo") Optional<String> atributo) {
+    public String listar(ModelMap modelMap) {
         List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
-        int paginaAtual = pagina.orElse(1);
-        String ordem = direcao.orElse("normal");
-        String baseOrdenacao = atributo.orElse("nome");
-
-        Paginacao<Perfil> paginaPerfis;
-
-        if (baseOrdenacao.equalsIgnoreCase("id")) {
-            paginaPerfis = buscaPaginadaId(paginaAtual, ordem, perfis);
-        } else {
-            paginaPerfis = buscaPaginadaNome(paginaAtual, ordem, perfis);
-        }
-
-        modelMap.addAttribute("paginaPerfis", paginaPerfis);
+        modelMap.addAttribute("perfis", perfis);
         return "perfis/lista";
     }
 
@@ -92,7 +79,7 @@ public class PerfilController {
         }
 
         attributes.addFlashAttribute("sucesso", "Perfil criado com sucesso");
-        return "redirect:/perfis/listar-especifico/"+ modeloCadastroPerfilPermissao.getPerfil().getId();
+        return "F"+ modeloCadastroPerfilPermissao.getPerfil().getId();
     }
 
     @PostMapping("/editar")
@@ -172,58 +159,23 @@ public class PerfilController {
         return perfilRepository.findById(id);
     }
 
-    public Paginacao<Perfil> buscaPaginadaNome(int pagina, String direcao, List<Perfil> perfis) {
-        int tamanho = 30;
-        int inicio = (pagina - 1) * tamanho;
-
-        if (direcao.equalsIgnoreCase("normal")) {
-            perfis.sort(Comparator.comparing(Perfil::getNome));
-        } else {
-            perfis.sort(Collections.reverseOrder(Comparator.comparing(Perfil::getNome)));
-        }
-
-        List<Perfil> paginaPerfis = perfis.stream().filter(perfil -> perfis.indexOf(perfil) >= inicio).limit(tamanho).toList();
-
-        int totalPaginas = (perfis.size() + (tamanho - 1)) / tamanho;
-
-        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaPerfis);
-    }
-
-    public Paginacao<Perfil> buscaPaginadaId(int pagina, String direcao, List<Perfil> perfis) {
-        int tamanho = 30;
-        int inicio = (pagina - 1) * tamanho;
-
-        if (direcao.equalsIgnoreCase("normal")) {
-            perfis.sort(Comparator.comparing(Perfil::getId));
-        } else {
-            perfis.sort(Collections.reverseOrder(Comparator.comparing(Perfil::getId)));
-        }
-
-        List<Perfil> paginaPerfis = perfis.stream().filter(perfil -> perfis.indexOf(perfil) >= inicio).limit(tamanho).toList();
-
-        int totalPaginas = (perfis.size() + (tamanho - 1)) / tamanho;
-
-        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaPerfis);
-    }
-
     @GetMapping("/deletar/{id}")
     public String deletar(@PathVariable int id, ModelMap modelMap) {
         Perfil perfilDelete = perfilRepository.findById(id).orElse(null);
         List<UsuarioPerfil> usuariosPerfil = usuarioPerfilRepository.findByPerfil(perfilDelete);
         List<PerfilPermissao> perfisPermissao = perfilPermissaoRepository.findByPerfil(perfilDelete);
-        if (usuariosPerfil.size() >=1) {
+        if (!usuariosPerfil.isEmpty()) {
             usuarioPerfilRepository.deleteAll(usuariosPerfil);
         }
-        if (perfisPermissao.size() >= 1) {
+        if (!perfisPermissao.isEmpty()) {
             perfilPermissaoRepository.deleteAll(perfisPermissao);
         }
         perfilRepository.delete(perfilDelete);
         modelMap.addAttribute("sucesso", "Perfil deletado com sucesso.");
 
         List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
-        Paginacao<Perfil> paginaPerfis = buscaPaginadaNome(1, "normal", perfis);
 
-        modelMap.addAttribute("paginaPerfis", paginaPerfis);
+        modelMap.addAttribute("perfis", perfis);
 
         return "perfis/lista";
     }

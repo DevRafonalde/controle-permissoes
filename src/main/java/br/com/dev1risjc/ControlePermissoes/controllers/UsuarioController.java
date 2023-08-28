@@ -1,6 +1,5 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.helpers.paginacao.Paginacao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.UsuarioPerfil;
@@ -45,22 +44,22 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar")
-    public String listar(ModelMap modelMap, @RequestParam("pagina") Optional<Integer> pagina, @RequestParam("direcao") Optional<String> direcao, @RequestParam("atributo") Optional<String> atributo) {
+    public String listar(ModelMap modelMap) {
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        int paginaAtual = pagina.orElse(1);
-        String ordem = direcao.orElse("normal");
-        String baseOrdenacao = atributo.orElse("nome");
-
-        Paginacao<Usuario> paginaUsuarios;
-
-        if (baseOrdenacao.equalsIgnoreCase("id")) {
-            paginaUsuarios = buscaPaginadaId(paginaAtual, ordem, usuarios);
-        } else {
-            paginaUsuarios = buscaPaginadaNome(paginaAtual, ordem, usuarios);
-        }
-
-
-        modelMap.addAttribute("paginaUsuarios", paginaUsuarios);
+        List<Usuario> perfisAmigaveis = usuarios.stream()
+                .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
+                .toList();
+        perfisAmigaveis.forEach(
+                usuario -> usuario.setNomeAmigavel(
+                        usuario.getNomeAmigavel()
+                                .substring(0 , 1)
+                                .toUpperCase()
+                                .concat(usuario.getNomeAmigavel()
+                                        .substring(1)
+                                )
+                )
+        );
+        modelMap.addAttribute("usuarios", perfisAmigaveis);
         return "usuarios/lista";
     }
 
@@ -181,24 +180,6 @@ public class UsuarioController {
         return usuarioRepository.findById(id);
     }
 
-    @GetMapping("/buscarPorNome")
-    public String buscarPorNome(@RequestParam("nome") String nome, ModelMap modelMap) {
-        int paginaAtual = 1;
-        String ordem = "normal";
-        List<Usuario> listaExibicao;
-
-        if (Objects.isNull(nome) || nome.equals("")) {
-            listaExibicao = (List<Usuario>) usuarioRepository.findAll();
-        } else {
-            listaExibicao = usuarioRepository.findByNomeAmigavel(nome);
-        }
-
-        Paginacao<Usuario> paginaUsuarios = buscaPaginadaNome(paginaAtual, ordem, listaExibicao);
-
-        modelMap.addAttribute("paginaUsuarios", paginaUsuarios);
-        return "usuarios/lista";
-    }
-
     @Transactional(readOnly = true)
     @GetMapping("/buscarTodos")
     public Iterable<Usuario> buscarTodos() {
@@ -209,52 +190,30 @@ public class UsuarioController {
     public String deletar(@PathVariable Integer id, ModelMap modelMap) {
         Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
         List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
-        if (vinculosUsuario.size() >= 1) {
+        if (!vinculosUsuario.isEmpty()) {
             usuarioPerfilRepository.deleteAll(vinculosUsuario);
         }
         usuarioRepository.delete(usuarioDelete);
         modelMap.addAttribute("sucesso", "Usuario deletado com sucesso.");
 
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        Paginacao<Usuario> paginaUsuarios = buscaPaginadaNome(1, "normal", usuarios);
+        List<Usuario> perfisAmigaveis = usuarios.stream()
+                .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
+                .toList();
+        perfisAmigaveis.forEach(
+                usuario -> usuario.setNomeAmigavel(
+                        usuario.getNomeAmigavel()
+                                .substring(0 , 1)
+                                .toUpperCase()
+                                .concat(usuario.getNomeAmigavel()
+                                        .substring(1)
+                                )
+                )
+        );
 
-        modelMap.addAttribute("paginaUsuarios", paginaUsuarios);
+        modelMap.addAttribute("usuarios", perfisAmigaveis);
 
         return "usuarios/lista";
-    }
-
-    public Paginacao<Usuario> buscaPaginadaNome(int pagina, String direcao, List<Usuario> usuarios) {
-        int tamanho = 30;
-        int inicio = (pagina - 1) * tamanho;
-        List<Usuario> perfisAmigaveis = new java.util.ArrayList<>(usuarios.stream().filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo()).toList());
-        perfisAmigaveis.forEach(usuario -> usuario.setNomeAmigavel(usuario.getNomeAmigavel().substring(0 , 1).toUpperCase().concat(usuario.getNomeAmigavel().substring(1))));
-        if (direcao.equalsIgnoreCase("normal")) {
-            perfisAmigaveis.sort(Comparator.comparing(usuario -> usuario.getNomeUser().toLowerCase()));
-        } else {
-            perfisAmigaveis.sort(Collections.reverseOrder(Comparator.comparing(usuario -> usuario.getNomeUser().toLowerCase())));
-        }
-        List<Usuario> paginaUsuarios = perfisAmigaveis.stream().filter(usuario -> perfisAmigaveis.indexOf(usuario) >= inicio).limit(tamanho).toList();
-
-        int totalPaginas = (perfisAmigaveis.size() + (tamanho - 1)) / tamanho;
-
-        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaUsuarios);
-    }
-
-    public Paginacao<Usuario> buscaPaginadaId(int pagina, String direcao, List<Usuario> usuarios) {
-        int tamanho = 30;
-        int inicio = (pagina - 1) * tamanho;
-        List<Usuario> perfisAmigaveis = new java.util.ArrayList<>(usuarios.stream().filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo()).toList());
-        perfisAmigaveis.forEach(usuario -> usuario.setNomeAmigavel(usuario.getNomeAmigavel().substring(0 , 1).toUpperCase().concat(usuario.getNomeAmigavel().substring(1))));
-        if (direcao.equalsIgnoreCase("normal")) {
-            perfisAmigaveis.sort(Comparator.comparing(Usuario::getId));
-        } else {
-            perfisAmigaveis.sort(Collections.reverseOrder(Comparator.comparing(Usuario::getId)));
-        }
-        List<Usuario> paginaUsuarios = perfisAmigaveis.stream().filter(usuario -> perfisAmigaveis.indexOf(usuario) >= inicio).limit(tamanho).toList();
-
-        int totalPaginas = (perfisAmigaveis.size() + (tamanho - 1)) / tamanho;
-
-        return new Paginacao<>(tamanho, pagina, totalPaginas, direcao, paginaUsuarios);
     }
 
     @ModelAttribute("perfis")
@@ -269,16 +228,4 @@ public class UsuarioController {
         todosPerfis.sort(Comparator.comparing(Perfil::getNome));
         return todosPerfis;
     }
-
-//    public List<Usuario> buscarPorDatas(LocalDate dataEntrada, LocalDate dataSaida) {
-//        if (dataEntrada != null && dataSaida != null) {
-//            return usuarioRepository.findByDataEntradaDataSaida(dataEntrada, dataSaida);
-//        } else if (dataEntrada != null) {
-//            return usuarioRepository.findByDataEntrada(dataEntrada);
-//        } else if (dataSaida != null) {
-//            return usuarioRepository.findByDataSaida(dataSaida);
-//        } else {
-//            return new ArrayList<>();
-//        }
-//    }
 }

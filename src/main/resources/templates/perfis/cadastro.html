@@ -1,30 +1,14 @@
 <!DOCTYPE html>
-<html th:replace="~{layout.html :: layout(~{::section})}">
+<html th:replace="~{layout.html :: layout(~{::main})}">
 	<head>
 		<meta charset="UTF-8"/>
 	</head>
 	<body>
-	    <section class="layout-content">
-	        <nav class="navbar navbar-expand-md bg-light fixed-top" style="padding: var(--bs-navbar-padding-y) 5%;">
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-	            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-	                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-	                    <li class="nav-item active">
-	                        <i class="fa-solid fa-caret-right fa-xl"></i>
-	                        <span>Cadastrar Perfis</span>
-	                    </li>
-	                </ul>
-	            </div>
-	            <a class="btn btn-primary btn-md" href="/perfis/listar" role="button">
-	                <span title="Listar" aria-hidden="true"><i class="fa-solid fa-table-list fa-xl"></i></span>
-	                <span>Listar Perfis</span>
-	            </a>
-	        </nav>
-			<div class="container" id="cadastro" style="padding-left: 10%;">
+		<main role="main" class="flex-shrink-0">
+			<div class="container" id="cadastro">
+				<h1 class="display-4">Cadastro de novo Perfil</h1>
 				<div th:replace="~{fragments/alert}"></div>
-	            <form th:action="${modeloCadastroPerfilPermissao.perfil == NULL} ? @{/perfis/novo-perfil} : @{/perfis/editar}" th:object="${modeloCadastroPerfilPermissao}" method="POST">
+	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST">
 					<div th:replace="~{fragments/validacao :: validacao}"></div>
 	                <div class="row">
 	                    <div class="col-md-6">
@@ -57,7 +41,7 @@
 								<th scope="row" th:text="${contagem.count}">1</th>
 								<td>
 									<select th:field="*{permissoesPerfil[__${contagem.index}__]}" class="form-select">
-										<option value="">Selecione...</option>
+										<option selected disabled value="">Selecione...</option>
 										<option th:each="p : ${permissoes}" th:value="${p.id}" th:text="${p.nome}"></option>
 									</select>
 								</td>
@@ -70,9 +54,12 @@
 	                </div>
 					<hr class="my-1" style="opacity: 0;">
 					<input type="hidden" id="perfil.id" th:field="*{perfil.id}">
-	                <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+					<div class="d-grid gap-2">
+						<button type="submit" class="btn btn-primary">Adicionar</button>
+						<a class="btn btn-secondary" th:href="@{/perfis/listar}" role="button">Voltar</a>
+					</div>
 	            </form>
 	        </div>
-	    </section>
+	    </main>
 	</body>
 </html>		

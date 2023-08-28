@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html th:replace="~{layout.html :: layout(~{::main})}">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+	    <main role="main" class="flex-shrink-0">
+	        <div class="container" id="cadastro">
+				<h1 class="display-4">Edição de Usuário</h1>
+				<div th:replace="~{fragments/alert}"></div>
+	            <form th:action="@{/usuarios/editar}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">
+	                <div class="row">
+	                    <div class="col-md-6">
+	                        <label for="usuario.nomeCompleto">Nome Completo:</label>
+	                        <input type="text" class="form-control" id="usuario.nomeCompleto" placeholder="Nome Completo" autofocus="autofocus" th:field="*{usuario.nomeCompleto}" th:classappend="${#fields.hasErrors('usuario.nomeCompleto')} ? 'is-invalid'"/>
+	                        <div class="invalid-feedback">
+								<span th:errors="*{usuario.nomeCompleto}"></span>
+	                        </div>
+	                    </div>
+	                    <div class="col-md-6">
+	                        <label for="usuario.nomeAmigavel">Nome Amigável:</label>
+	                        <input type="text" class="form-control" id="usuario.nomeAmigavel" placeholder="Nome Amigável" th:field="*{usuario.nomeAmigavel}" th:classappend="${#fields.hasErrors('usuario.nomeAmigavel')} ? 'is-invalid'"/>
+	                        <div class="invalid-feedback">
+								<span th:errors="*{usuario.nomeAmigavel}"></span>
+	                        </div>
+	                    </div>
+						<div class="col-md-6">
+							<label for="usuario.nomeUser">Nome de Usuário:</label>
+							<input type="text" class="form-control" id="usuario.nomeUser" placeholder="Nome Usuário" autofocus="autofocus" th:field="*{usuario.nomeUser}" th:classappend="${#fields.hasErrors('usuario.nomeUser')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{usuario.nomeUser}"></span>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<label for="usuario.observacao">Observação:</label>
+							<input type="text" class="form-control" id="usuario.observacao" placeholder="Observação" th:field="*{usuario.observacao}" th:classappend="${#fields.hasErrors('usuario.observacao')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{usuario.observacao}"></span>
+							</div>
+						</div>
+	                    <div class="col-md-6" style="margin-top: 2.5%;">
+	                        <label class="form-check-label" for="usuario.caixaVirtual">Caixa Virtual</label>
+	                        <input type="checkbox" class="form-check-input" id="usuario.caixaVirtual" th:field="*{usuario.caixaVirtual}" th:classappend="${#fields.hasErrors('usuario.caixaVirtual')} ? 'is-invalid'"/>
+	                        <div class="invalid-feedback">
+								<span th:errors="*{usuario.caixaVirtual}"></span>
+	                        </div>
+	                    </div>
+						<div class="col-md-6" style="margin-top: 2.5%;">
+							<label class="form-check-label" for="usuario.ativo">Ativo</label>
+							<input type="checkbox" class="form-check-input" id="usuario.ativo" th:field="*{usuario.ativo}" th:classappend="${#fields.hasErrors('usuario.ativo')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{usuario.caixaVirtual}"></span>
+							</div>
+						</div>
+						<table class="table table-striped">
+							<thead class="thead-light">
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Perfil</th>
+								<th scope="col">
+									<button type="submit" name="addPerfil" class="btn btn-success">Adicionar Perfil</button>
+								</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="perfil,contagem : *{perfisUsuario}">
+								<th scope="row" th:text="${contagem.count}">1</th>
+								<td>
+									<select th:field="*{perfisUsuario[__${contagem.index}__]}" class="form-select">
+										<option disabled value="">Selecione...</option>
+										<option th:each="p : ${perfis}" th:value="${p.id}" th:text="${p.Nome}"></option>
+									</select>
+								</td>
+								<td>
+									<button type="submit" name="removePerfil" th:value="${contagem.index}" class="btn btn-danger">Remover Perfil</button>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+	                </div>
+					<hr class="my-1" style="opacity: 0;">
+					<input type="hidden" id="usuario.id" th:field="*{usuario.id}">
+					<div class="d-grid gap-2">
+						<button type="submit" class="btn btn-primary">Alterar</button>
+						<a class="btn btn-secondary" th:href="@{/usuarios/listar}" role="button">Voltar</a>
+					</div>
+					<br>
+	            </form>
+	        </div>
+	    </main>
+	</body>
+</html>

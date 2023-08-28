@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html th:replace="~{layout.html :: layout(~{::main})}">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+		<main role="main" class="flex-shrink-0">
+			<div class="container" id="cadastro">
+				<h1 class="display-4">Edição de Permissão</h1>
+				<div th:replace="~{fragments/alert}"></div>
+	            <form th:action="@{/permissoes/nova-permissao}" th:object="${permissao}" method="POST">
+					<div th:replace="~{fragments/validacao :: validacao}"></div>
+	                <div class="row">
+	                    <div class="col-md-6">
+	                        <label for="nome">Nome:</label>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Permissão" autofocus="autofocus" th:field="*{nome}"/>
+	                    </div>
+						<div class="col-md-6">
+							<label for="descricao">Descrição:</label>
+							<input type="text" class="form-control" id="descricao" placeholder="Descrição" autofocus="autofocus" th:field="*{descricao}"/>
+						</div>
+						<div class="col-md-6">
+							<label for="sistema">Sistema:</label>
+							<select id="sistema" class="form-select" th:field="*{sistema}">
+								<option value="">Selecione...</option>
+								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label for="permissaoSuperior">Permissão Superior:</label>
+							<select id="permissaoSuperior" class="form-select" th:field="*{idPermissaoSuperior}">
+								<option value="">Selecione...</option>
+								<option th:each="p : ${listaPermissoesCadastro}" th:value="${p.id}" th:text="${p.nome}">Permissão Superior</option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label for="mnemonico">Nome:</label>
+							<input type="text" class="form-control" id="mnemonico" placeholder="Mnemônico" autofocus="autofocus" th:field="*{mnemonico}"/>
+						</div>
+	                </div>
+					<hr class="my-1" style="opacity: 0;">
+					<input type="hidden" id="id" th:field="*{id}">
+					<div class="d-grid gap-2">
+						<button type="submit" class="btn btn-primary">Alterar</button>
+						<a class="btn btn-secondary" th:href="@{/permissoes/listar}" role="button">Voltar</a>
+					</div>
+	            </form>
+	        </div>
+	    </main>
+	</body>
+</html>

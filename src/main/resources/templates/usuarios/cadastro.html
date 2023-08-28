@@ -1,29 +1,14 @@
 <!DOCTYPE html>
-<html th:replace="~{layout.html :: layout(~{::section})}">
+<html th:replace="~{layout.html :: layout(~{::main})}">
 	<head>
 		<meta charset="UTF-8"/>
 	</head>
 	<body>
-	    <section class="layout-content">
-	        <div class="page-header">
-	            <nav class="navbar navbar-expand-md navbar-top bg-light fixed-top" style="padding: var(--bs-navbar-padding-y) 5%;">
-	                <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-	                    <ul class="navbar-nav">
-	                        <li class="nav-item active">
-	                            <i class="fa-solid fa-caret-right fa-xl"></i>
-	                            <span>Cadastro de Usuários</span>
-	                        </li>
-	                    </ul>
-	                </div>
-	                <a class="btn btn-primary btn-md" href="/usuarios/listar" role="button">
-	                    <span title="Listar" aria-hidden="true"><i class="fa-solid fa-table-list fa-xl"></i></span>
-	                    <span>Listar Usuários</span>
-	                </a>
-	            </nav>
-	        </div>
-	        <div class="container" id="cadastro" style="padding-left: 10%;">
+	    <main role="main" class="flex-shrink-0">
+	        <div class="container" id="cadastro">
+				<h1 class="display-4">Cadastro de novo Usuário</h1>
 				<div th:replace="~{fragments/alert}"></div>
-	            <form th:action="${modeloCadastroUsuarioPerfil.usuario == NULL} ? @{/usuarios/novo-usuario} : @{/usuarios/editar}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">
+	            <form th:action="@{/usuarios/novo-usuario}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">
 	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label for="usuario.nomeCompleto">Nome Completo:</label>
@@ -82,7 +67,7 @@
 								<th scope="row" th:text="${contagem.count}">1</th>
 								<td>
 									<select th:field="*{perfisUsuario[__${contagem.index}__]}" class="form-select">
-										<option disabled value="">Selecione...</option>
+										<option selected disabled value="">Selecione...</option>
 										<option th:each="p : ${perfis}" th:value="${p.id}" th:text="${p.Nome}"></option>
 									</select>
 								</td>
@@ -95,10 +80,13 @@
 	                </div>
 					<hr class="my-1" style="opacity: 0;">
 					<input type="hidden" id="usuario.id" th:field="*{usuario.id}">
-	                <button type="submit" class="btn btn-primary btn-lg">Salvar</button>
+					<div class="d-grid gap-2">
+						<button type="submit" class="btn btn-primary">Adicionar</button>
+						<a class="btn btn-secondary" th:href="@{/usuarios/listar}" role="button">Voltar</a>
+					</div>
 					<br>
 	            </form>
 	        </div>
-	    </section>
+	    </main>
 	</body>
 </html>

@@ -33,7 +33,7 @@ public class Perfil {
 
     @Column(name = "Excluido")
     @Getter @Setter
-    private Boolean excluido;
+    private Boolean excluido = false;
 
     public Sistema getSistema() {
         if (Objects.isNull(sistema)) {

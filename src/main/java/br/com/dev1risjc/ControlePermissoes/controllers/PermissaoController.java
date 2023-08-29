@@ -6,6 +6,7 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilPermissaoRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PermissaoRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.SistemasRepository;
+import br.com.dev1risjc.ControlePermissoes.services.PermissaoService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +23,10 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/permissoes")
 public class PermissaoController {
+    private PermissaoService permissaoService;
 
-    private PermissaoRepository permissaoRepository;
-    private SistemasRepository sistemasRepository;
-    private PerfilPermissaoRepository perfilPermissaoRepository;
-    private Integer ultimoId;
-
-    public PermissaoController(PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, PerfilPermissaoRepository perfilPermissaoRepository) {
-        this.permissaoRepository = permissaoRepository;
-        this.sistemasRepository = sistemasRepository;
-        this.perfilPermissaoRepository = perfilPermissaoRepository;
+    public PermissaoController(PermissaoService permissaoService) {
+        this.permissaoService = permissaoService;
     }
 
     @GetMapping("/cadastrar")
@@ -41,95 +36,55 @@ public class PermissaoController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-        ultimoId = permissoes.get(permissoes.size() - 1).getId();
+        List<Permissao> permissoes = permissaoService.listar();
         modelMap.addAttribute("permissoes", permissoes);
         return "permissoes/lista";
     }
 
     @PostMapping("/nova-permissao")
-    public String novoPermissao(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
+    public String novaPermissao(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "permissoes/cadastro";
         }
-        if (Objects.isNull(ultimoId)) {
-            List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-            ultimoId = permissoes.get(permissoes.size() - 1).getId();
-        }
-        permissao.setDesabilitado(false);
-        permissao.setGerarLog(false);
-        permissao.setId(ultimoId);
-        ultimoId++;
-        permissaoRepository.save(permissao);
+
+        permissaoService.novaPermissao(permissao);
+
         attributes.addFlashAttribute("sucesso", "Permissao criada com sucesso.");
-        return "redirect:/permissoes/cadastrar";
+        return "redirect:/permissoes/listar";
     }
 
     @PostMapping("/editar")
     public String editar(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
-            return "permissoes/cadastro";
+            return "permissoes/edicao";
         }
-        if (Objects.isNull(ultimoId)) {
-            List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-            permissoes.sort(Comparator.comparingInt(Permissao::getId));
-            ultimoId = permissoes.get(permissoes.size() - 1).getId();
-        }
-        ultimoId++;
-        permissao.setDesabilitado(false);
-        permissao.setGerarLog(false);
-        permissao.setId(ultimoId);
-        permissaoRepository.save(permissao);
+
+        permissaoService.editar(permissao);
+
         attributes.addFlashAttribute("sucesso", "Permissao editada com sucesso.");
         return "redirect:/permissoes/listar";
     }
 
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        modelMap.addAttribute("Permissao", permissaoRepository.findById(id).orElse(null));
-        return "permissoes/cadastro";
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarPorId/{id}")
-    public Optional<Permissao> buscarPorId(@PathVariable int id) {
-        return permissaoRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarTodos")
-    public Iterable<Permissao> buscarTodos() {
-        return permissaoRepository.findAll();
+        modelMap.addAttribute("permissao", permissaoService.preEditar(id));
+        return "permissoes/edicao";
     }
 
     @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable int id, ModelMap modelMap) {
-
-        Permissao permissaoDelete = permissaoRepository.findById(id).orElse(null);
-        List<PerfilPermissao> usosPermissao = perfilPermissaoRepository.findByPermissao(permissaoDelete);
-        if (!usosPermissao.isEmpty()) {
-            perfilPermissaoRepository.deleteAll(usosPermissao);
-        }
-        permissaoRepository.delete(permissaoDelete);
-        modelMap.addAttribute("sucesso", "Permissão deletada com sucesso.");
-
-        List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-        modelMap.addAttribute("permissoes", permissoes);
-        return "permissoes/lista";
+    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
+        permissaoService.deletar(id);
+        attributes.addFlashAttribute("sucesso", "Permissao deletada com sucesso.");
+        return "redirect:/permissoes/listar";
     }
 
     @ModelAttribute("sistemas")
     public List<Sistema> getSistemas() {
-        List<Sistema> sistemas = (List<Sistema>) sistemasRepository.findAll();
-
-        sistemas.sort(Comparator.comparing(Sistema::getNome));
-        return sistemas;
+        return permissaoService.getSistemas();
     }
 
     @ModelAttribute("listaPermissoesCadastro")
     public List<Permissao> getPermissoesCadastro() {
-        List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-        permissoes.sort(Comparator.comparing(Permissao::getNome));
-        return permissoes;
+        return permissaoService.getPermissoesCadastro();
     }
 }

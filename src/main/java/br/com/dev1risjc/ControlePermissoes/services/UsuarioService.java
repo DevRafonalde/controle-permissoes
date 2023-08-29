@@ -9,17 +9,12 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUs
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UsuarioService {
@@ -38,7 +33,7 @@ public class UsuarioService {
 //    public void initBinder(WebDataBinder binder) {
 //        binder.addValidators(new FuncionarioValidator());
 //    }
-    public List<Usuario> findAll() {
+    public List<Usuario> listarTodos() {
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
         List<Usuario> perfisAmigaveis = usuarios.stream()
                 .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
@@ -66,8 +61,14 @@ public class UsuarioService {
 
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
         modeloCadastroUsuarioPerfil.setUsuario(usuario);
-        List<Perfil> perfis = usuarioPerfilRepository.findByUsuario(usuario).stream().map(UsuarioPerfil::getPerfil).filter(Objects::nonNull).toList();
-        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfis.stream().sorted(Comparator.comparing(perfil -> perfil.getSistema().getNome())).toList());
+        List<Perfil> perfis = usuarioPerfilRepository.findByUsuario(usuario).stream()
+                .map(UsuarioPerfil::getPerfil)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(perfil -> perfil.getSistema().getNome()))
+                .toList();
+
+        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfis);
+
         return modeloCadastroUsuarioPerfil;
     }
 
@@ -101,7 +102,7 @@ public class UsuarioService {
         return modeloRetorno;
     }
 
-    public ModeloCadastroUsuarioPerfil editar(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
+    public ModeloCadastroUsuarioPerfil editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioMexido = modeloCadastroUsuarioPerfil.getUsuario();
 
         Usuario usuarioBanco = usuarioRepository.findById(usuarioMexido.getId()).orElse(null);
@@ -143,15 +144,24 @@ public class UsuarioService {
     }
 
     public ModeloCadastroUsuarioPerfil preEditar(Integer id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuario).stream().map(UsuarioPerfil::getPerfil).toList();
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(usuarioBanco)) {
+            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
+        }
+
+        List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuarioBanco).stream()
+                .map(UsuarioPerfil::getPerfil)
+                .toList();
+
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
-        modeloCadastroUsuarioPerfil.setUsuario(usuario);
+        modeloCadastroUsuarioPerfil.setUsuario(usuarioBanco);
         modeloCadastroUsuarioPerfil.setPerfisUsuario(perfisUsuario);
+
         return modeloCadastroUsuarioPerfil;
     }
 
-    public List<Usuario> deletar(Integer id) {
+    public void deletar(Integer id) {
         Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
 
         if (Objects.isNull(usuarioDelete)) {
@@ -163,23 +173,6 @@ public class UsuarioService {
             usuarioPerfilRepository.deleteAll(vinculosUsuario);
         }
         usuarioRepository.delete(usuarioDelete);
-
-        List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
-        List<Usuario> usuariosAtivos = usuarios.stream()
-                .filter(usuario -> usuario.getNomeAmigavel() != null && usuario.getAtivo())
-                .toList();
-        usuariosAtivos.forEach(
-                usuario -> usuario.setNomeAmigavel(
-                        usuario.getNomeAmigavel()
-                                .substring(0 , 1)
-                                .toUpperCase()
-                                .concat(usuario.getNomeAmigavel()
-                                        .substring(1)
-                                )
-                )
-        );
-
-        return usuariosAtivos;
     }
 
     public List<Perfil> getPerfis(UsuarioPerfil usuarioPerfil) {

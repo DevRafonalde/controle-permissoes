@@ -40,7 +40,7 @@ public class Permissao {
 
     @Column(name = "Desabilitado")
     @Getter @Setter
-    private Boolean desabilitado;
+    private Boolean desabilitado = false;
 
     @Column(name = "Mnemonico")
     @Getter @Setter

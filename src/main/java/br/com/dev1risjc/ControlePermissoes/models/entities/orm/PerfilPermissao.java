@@ -36,6 +36,6 @@ public class PerfilPermissao {
 
     @Column(name = "Excluido")
     @Getter @Setter
-    private Boolean excluido;
+    private Boolean excluido = false;
 
 }

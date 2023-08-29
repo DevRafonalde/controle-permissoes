@@ -1,36 +1,30 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
+import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
+import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
+import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/perfis")
 public class PerfilController {
+    private PerfilService perfilService;
 
-    private PerfilRepository perfilRepository;
-    private PerfilPermissaoRepository perfilPermissaoRepository;
-    private PermissaoRepository permissaoRepository;
-    private SistemasRepository sistemasRepository;
-    private UsuarioPerfilRepository usuarioPerfilRepository;
-
-    public PerfilController(PerfilRepository perfilRepository, PerfilPermissaoRepository perfilPermissaoRepository, PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, UsuarioPerfilRepository usuarioPerfilRepository) {
-        this.perfilRepository = perfilRepository;
-        this.perfilPermissaoRepository = perfilPermissaoRepository;
-        this.permissaoRepository = permissaoRepository;
-        this.sistemasRepository = sistemasRepository;
-        this.usuarioPerfilRepository = usuarioPerfilRepository;
+    public PerfilController(PerfilService perfilService) {
+        this.perfilService = perfilService;
     }
 
     @GetMapping("/cadastrar")
@@ -40,69 +34,42 @@ public class PerfilController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
+        List<Perfil> perfis = perfilService.listarTodos();
         modelMap.addAttribute("perfis", perfis);
         return "perfis/lista";
     }
 
     @GetMapping("/listar-especifico/{id}")
     public String listarEspecifico(@PathVariable Integer id, ModelMap modelMap) {
-        Perfil perfil = perfilRepository.findById(id).orElse(null);
-        PerfilPermissao perfilPermissao = new PerfilPermissao();
-        perfilPermissao.setPerfil(perfil);
+        ModeloCadastroPerfilPermissao perfilPermissao = perfilService.listarEspecifico(id);
         modelMap.addAttribute("perfilPermissao", perfilPermissao);
         return "perfis/lista-especifica";
     }
 
     @PostMapping("/novo-perfil")
-    public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, RedirectAttributes attributes) {
+    public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "perfis/cadastro";
         }
 
-        List<Permissao> permissoes = modeloCadastroPerfilPermissao.getPermissoesPerfil();
-        for (Permissao permissao : permissoes) {
-            PerfilPermissao perfilPermissao = new PerfilPermissao();
-            perfilPermissao.setPerfil(modeloCadastroPerfilPermissao.getPerfil());
-            perfilPermissao.getPerfil().setExcluido(false);
-            perfilPermissao.setDataHora(LocalDateTime.now());
-            perfilPermissao.setExcluido(false);
-            perfilPermissao.setPermissao(permissao);
-            System.out.println(permissao.getNome());
-            perfilPermissaoRepository.save(perfilPermissao);
-            System.out.println("Salvou");
-        }
+        ModeloCadastroPerfilPermissao perfilPermissao = perfilService.novoPerfil(modeloCadastroPerfilPermissao);
 
-        attributes.addFlashAttribute("sucesso", "Perfil criado com sucesso");
-        return "F"+ modeloCadastroPerfilPermissao.getPerfil().getId();
+        modelMap.addAttribute("sucesso", "Perfil criado com sucesso");
+        modelMap.addAttribute("perfilPermissao", perfilPermissao);
+        return "perfis/lista-especifica";
     }
 
     @PostMapping("/editar")
-    public String editar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, RedirectAttributes attributes) {
+    public String editar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, ModelMap modelMap) {
         if (result.hasErrors()) {
-            return "perfis/cadastro";
-        }
-        Perfil perfilMexido = modeloCadastroPerfilPermissao.getPerfil();
-        perfilMexido.setExcluido(false);
-        perfilRepository.save(perfilMexido);
-        List<PerfilPermissao> registrosExistentes = perfilPermissaoRepository.findByPerfil(modeloCadastroPerfilPermissao.getPerfil());
-        for (PerfilPermissao perfilPermissao : registrosExistentes) {
-            perfilPermissaoRepository.delete(perfilPermissao);
+            return "perfis/edicao";
         }
 
-        List<Permissao> permissoes = modeloCadastroPerfilPermissao.getPermissoesPerfil();
-        for (Permissao permissao : permissoes) {
-            PerfilPermissao perfilPermissao = new PerfilPermissao();
-            perfilPermissao.setPerfil(modeloCadastroPerfilPermissao.getPerfil());
-            perfilPermissao.getPerfil().setExcluido(false);
-            perfilPermissao.setDataHora(LocalDateTime.now());
-            perfilPermissao.setExcluido(false);
-            perfilPermissao.setPermissao(permissao);
-            perfilPermissaoRepository.save(perfilPermissao);
-        }
+        ModeloCadastroPerfilPermissao perfilPermissao = perfilService.editar(modeloCadastroPerfilPermissao);
 
-        attributes.addFlashAttribute("sucesso", "Perfil salvo com sucesso");
-        return "redirect:/perfis/listar-especifico/"+ perfilMexido.getId();
+        modelMap.addAttribute("sucesso", "Perfil salvo com sucesso");
+        modelMap.addAttribute("perfilPermissao", perfilPermissao);
+        return "perfis/lista-especifica";
     }
 
     @RequestMapping(value="/novo-perfil", params={"addPermissao"})
@@ -127,72 +94,39 @@ public class PerfilController {
             modeloCadastroPerfilPermissao.setPermissoesPerfil(new ArrayList<>());
         }
         modeloCadastroPerfilPermissao.getPermissoesPerfil().add(new Permissao());
-        return "perfis/cadastro";
+        return "perfis/edicao";
     }
 
     @RequestMapping(value="/editar", params={"removePermissao"})
     public String removeRowEdicao(final ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, final BindingResult bindingResult, final HttpServletRequest req) {
         final Integer permissaoPerfilId = Integer.valueOf(req.getParameter("removePermissao"));
         modeloCadastroPerfilPermissao.getPermissoesPerfil().remove(permissaoPerfilId.intValue());
-        return "perfis/cadastro";
+        return "perfis/edicao";
     }
 
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        Perfil perfil = perfilRepository.findById(id).orElse(null);
-        List<Permissao> permissoesPerfil = perfilPermissaoRepository.findByPerfil(perfil).stream().map(PerfilPermissao::getPermissao).toList();
-        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = new ModeloCadastroPerfilPermissao();
-        modeloCadastroPerfilPermissao.setPerfil(perfil);
-        modeloCadastroPerfilPermissao.setPermissoesPerfil(permissoesPerfil);
+        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.preEditar(id);
         modelMap.addAttribute("modeloCadastroPerfilPermissao", modeloCadastroPerfilPermissao);
-        return "perfis/cadastro";
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarPorId/{id}")
-    public Optional<Perfil> buscarPorId(@PathVariable int id) {
-        return perfilRepository.findById(id);
+        return "perfis/edicao";
     }
 
     @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable int id, ModelMap modelMap) {
-        Perfil perfilDelete = perfilRepository.findById(id).orElse(null);
-        List<UsuarioPerfil> usuariosPerfil = usuarioPerfilRepository.findByPerfil(perfilDelete);
-        List<PerfilPermissao> perfisPermissao = perfilPermissaoRepository.findByPerfil(perfilDelete);
-        if (!usuariosPerfil.isEmpty()) {
-            usuarioPerfilRepository.deleteAll(usuariosPerfil);
-        }
-        if (!perfisPermissao.isEmpty()) {
-            perfilPermissaoRepository.deleteAll(perfisPermissao);
-        }
-        perfilRepository.delete(perfilDelete);
-        modelMap.addAttribute("sucesso", "Perfil deletado com sucesso.");
+    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
+        perfilService.deletar(id);
+        attributes.addFlashAttribute("sucesso", "Perfil deletado com sucesso.");
 
-        List<Perfil> perfis = (List<Perfil>) perfilRepository.findAll();
-
-        modelMap.addAttribute("perfis", perfis);
-
-        return "perfis/lista";
+        return "redirect:/perfis/listar";
     }
 
     @ModelAttribute("permissoes")
     public List<Permissao> getPermissoes(PerfilPermissao perfilPermissao) {
-        if (Objects.nonNull(perfilPermissao.getId())){
-            Perfil perfil = perfilRepository.findById(perfilPermissao.getId()).orElse(null);
-            List<Integer> idsPermissoes = perfilPermissaoRepository.findByPerfil(perfil).stream().filter(p -> Objects.nonNull(p.getPerfil())).map(u -> u.getPermissao().getId()).toList();
-            List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAllById(idsPermissoes);
-            return permissoes.stream().sorted(Comparator.comparing(Permissao::getNome)).toList();
-        }
-        List<Permissao> todasPermissoes = (List<Permissao>) permissaoRepository.findAll();
-        todasPermissoes.sort(Comparator.comparing(Permissao::getNome));
-        return todasPermissoes;
+        return perfilService.getPermissoes(perfilPermissao);
     }
 
     @ModelAttribute("sistemas")
     public List<Sistema> getSistemas() {
-        List<Sistema> sistemas = (List<Sistema>) sistemasRepository.findAll();
-        sistemas.sort(Comparator.comparing(Sistema::getNome));
-        return sistemas;
+        return perfilService.getSistemas();
     }
 
 }

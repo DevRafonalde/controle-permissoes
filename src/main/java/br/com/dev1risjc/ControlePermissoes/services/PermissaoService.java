@@ -1,26 +1,22 @@
 package br.com.dev1risjc.ControlePermissoes.services;
 
+import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoException;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilPermissaoRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PermissaoRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.SistemasRepository;
-import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-@Controller
-@RequestMapping("/permissoes")
+@Service
 public class PermissaoService {
 
     private PermissaoRepository permissaoRepository;
@@ -34,91 +30,66 @@ public class PermissaoService {
         this.perfilPermissaoRepository = perfilPermissaoRepository;
     }
 
-    @GetMapping("/cadastrar")
-    public String cadastrar(Permissao permissao) {
-        return "permissoes/cadastro";
-    }
-
-    @GetMapping("/listar")
-    public String listar(ModelMap modelMap) {
+    public List<Permissao> listar() {
         List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
         ultimoId = permissoes.get(permissoes.size() - 1).getId();
-        modelMap.addAttribute("permissoes", permissoes);
-        return "permissoes/lista";
+        return permissoes;
     }
 
-    @PostMapping("/nova-permissao")
-    public String novoPermissao(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
-        if (result.hasErrors()) {
-            return "permissoes/cadastro";
-        }
+    public void novaPermissao(Permissao permissao) {
         if (Objects.isNull(ultimoId)) {
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
             ultimoId = permissoes.get(permissoes.size() - 1).getId();
         }
-        permissao.setDesabilitado(false);
-        permissao.setGerarLog(false);
-        permissao.setId(ultimoId);
+
         ultimoId++;
+        permissao.setId(ultimoId);
         permissaoRepository.save(permissao);
-        attributes.addFlashAttribute("sucesso", "Permissao criada com sucesso.");
-        return "redirect:/permissoes/cadastrar";
     }
 
-    @PostMapping("/editar")
-    public String editar(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
-        if (result.hasErrors()) {
-            return "permissoes/cadastro";
+    public void editar(Permissao permissao) {
+        Permissao permissaoBanco = permissaoRepository.findById(permissao.getId()).orElse(null);
+
+        if (Objects.isNull(permissaoBanco)) {
+            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
         }
+
         if (Objects.isNull(ultimoId)) {
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
             permissoes.sort(Comparator.comparingInt(Permissao::getId));
             ultimoId = permissoes.get(permissoes.size() - 1).getId();
         }
+
         ultimoId++;
-        permissao.setDesabilitado(false);
-        permissao.setGerarLog(false);
         permissao.setId(ultimoId);
         permissaoRepository.save(permissao);
-        attributes.addFlashAttribute("sucesso", "Permissao editada com sucesso.");
-        return "redirect:/permissoes/listar";
     }
 
-    @GetMapping("/preEditar/{id}")
-    public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        modelMap.addAttribute("Permissao", permissaoRepository.findById(id).orElse(null));
-        return "permissoes/cadastro";
+    public Permissao preEditar(int id) {
+        Permissao permissaoBanco = permissaoRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(permissaoBanco)) {
+            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
+        }
+
+        return permissaoBanco;
     }
 
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarPorId/{id}")
-    public Optional<Permissao> buscarPorId(@PathVariable int id) {
-        return permissaoRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/buscarTodos")
-    public Iterable<Permissao> buscarTodos() {
-        return permissaoRepository.findAll();
-    }
-
-    @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable int id, ModelMap modelMap) {
-
+    public void deletar(int id) {
         Permissao permissaoDelete = permissaoRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(permissaoDelete)) {
+            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
+        }
+
         List<PerfilPermissao> usosPermissao = perfilPermissaoRepository.findByPermissao(permissaoDelete);
         if (!usosPermissao.isEmpty()) {
             perfilPermissaoRepository.deleteAll(usosPermissao);
         }
-        permissaoRepository.delete(permissaoDelete);
-        modelMap.addAttribute("sucesso", "Permissão deletada com sucesso.");
 
-        List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
-        modelMap.addAttribute("permissoes", permissoes);
-        return "permissoes/lista";
+        permissaoRepository.delete(permissaoDelete);
     }
 
-    @ModelAttribute("sistemas")
     public List<Sistema> getSistemas() {
         List<Sistema> sistemas = (List<Sistema>) sistemasRepository.findAll();
 
@@ -126,7 +97,6 @@ public class PermissaoService {
         return sistemas;
     }
 
-    @ModelAttribute("listaPermissoesCadastro")
     public List<Permissao> getPermissoesCadastro() {
         List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
         permissoes.sort(Comparator.comparing(Permissao::getNome));

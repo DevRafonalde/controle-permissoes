@@ -4,35 +4,23 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.UsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilRepository;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepository;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
 import br.com.dev1risjc.ControlePermissoes.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
-
-    private final UsuarioRepository usuarioRepository;
-    private final UsuarioPerfilRepository usuarioPerfilRepository;
-    private final PerfilRepository perfilRepository;
     private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioRepository usuarioRepository, UsuarioPerfilRepository usuarioPerfilRepository, PerfilRepository perfilRepository, UsuarioService usuarioService) {
-        this.usuarioRepository = usuarioRepository;
-        this.usuarioPerfilRepository = usuarioPerfilRepository;
-        this.perfilRepository = perfilRepository;
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
@@ -49,7 +37,7 @@ public class UsuarioController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Usuario> usuarios = usuarioService.findAll();
+        List<Usuario> usuarios = usuarioService.listarTodos();
         modelMap.addAttribute("usuarios", usuarios);
         return "usuarios/lista";
     }
@@ -62,14 +50,14 @@ public class UsuarioController {
     }
 
     @PostMapping("/novo-usuario")
-    public String novoUsuario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes, ModelMap modelMap) {
+    public String novoUsuario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "usuarios/cadastro";
         }
 
         ModeloCadastroUsuarioPerfil usuarioNovo = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
 
-        attributes.addFlashAttribute("sucesso", "Usuário inserido com sucesso");
+        modelMap.addAttribute("sucesso", "Usuário inserido com sucesso");
         modelMap.addAttribute("usuario", usuarioNovo);
         return "usuarios/lista-especifica";
     }
@@ -96,25 +84,25 @@ public class UsuarioController {
             modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
         }
         modeloCadastroUsuarioPerfil.getPerfisUsuario().add(new Perfil());
-        return "usuarios/cadastro";
+        return "usuarios/edicao";
     }
 
     @RequestMapping(value="/editar", params={"removePerfil"})
     public String removeRowEdicao(final ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, final BindingResult bindingResult, final HttpServletRequest req) {
         final Integer perfilUsuarioId = Integer.valueOf(req.getParameter("removePerfil"));
         modeloCadastroUsuarioPerfil.getPerfisUsuario().remove(perfilUsuarioId.intValue());
-        return "usuarios/cadastro";
+        return "usuarios/edicao";
     }
 
     @PostMapping("/editar")
-    public String editar(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes, ModelMap modelMap) {
+    public String editar(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, ModelMap modelMap) {
         if (result.hasErrors()) {
-            return "usuarios/cadastro";
+            return "usuarios/edicao";
         }
 
         ModeloCadastroUsuarioPerfil modeloRetorno = usuarioService.editar(modeloCadastroUsuarioPerfil);
 
-        attributes.addFlashAttribute("sucesso", "Funcionário editado com sucesso");
+        modelMap.addAttribute("sucesso", "Funcionário editado com sucesso");
         modelMap.addAttribute("usuario", modeloRetorno);
         return "usuarios/lista-especifica";
     }
@@ -123,18 +111,17 @@ public class UsuarioController {
     public String preEditar(@PathVariable Integer id, ModelMap modelMap) {
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.preEditar(id);
         modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
-        return "usuarios/cadastro";
+        return "usuarios/edicao";
     }
 
     @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable Integer id, ModelMap modelMap) {
+    public String deletar(@PathVariable Integer id, RedirectAttributes attributes) {
 
-        List<Usuario> usuariosAtivos = usuarioService.deletar(id);
+        usuarioService.deletar(id);
 
-        modelMap.addAttribute("sucesso", "Usuario deletado com sucesso.");
-        modelMap.addAttribute("usuarios", usuariosAtivos);
+        attributes.addFlashAttribute("sucesso", "Usuario deletado com sucesso.");
 
-        return "usuarios/lista";
+        return "redirect:/usuarios/listar";
     }
 
     @ModelAttribute("perfis")

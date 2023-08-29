@@ -1,24 +1,16 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilPermissaoRepository;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.PermissaoRepository;
-import br.com.dev1risjc.ControlePermissoes.models.repositories.SistemasRepository;
 import br.com.dev1risjc.ControlePermissoes.services.PermissaoService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/permissoes")

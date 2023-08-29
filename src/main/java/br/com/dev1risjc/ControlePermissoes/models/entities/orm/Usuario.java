@@ -32,6 +32,10 @@ public class Usuario {
     @Getter @Setter
     private String senhaUser;
 
+//    @Transient
+//    @Getter @Setter
+//    private String senhaUser;
+
     @Column(name = "ID_WebRI")
     @Getter @Setter
     private Integer idWebRi;

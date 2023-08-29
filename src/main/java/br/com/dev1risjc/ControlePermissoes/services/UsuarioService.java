@@ -11,6 +11,10 @@ import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepo
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -72,7 +76,7 @@ public class UsuarioService {
         return modeloCadastroUsuarioPerfil;
     }
 
-    public ModeloCadastroUsuarioPerfil novoUsuario(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
+    public int novoUsuario(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioExistente = usuarioRepository.findByNomeUser(modeloCadastroUsuarioPerfil.getUsuario().getNomeUser());
 
         if (Objects.nonNull(usuarioExistente)) {
@@ -80,6 +84,27 @@ public class UsuarioService {
         }
 
         Usuario usuarioRecebido = modeloCadastroUsuarioPerfil.getUsuario();
+
+//        Possível implementação para gravação de um hash da senha na tbl_Usuario ao invés da senha em si
+//        Só não implementei pq o campo é pequeno demais para aceitar o hash
+//        MessageDigest criptografia;
+//        byte[] messageDigest;
+//        try {
+//            System.out.println(usuarioRecebido.getSenhaUser());
+//            criptografia = MessageDigest.getInstance("SHA-256");
+//            messageDigest = criptografia.digest(usuarioRecebido.getSenhaUser().getBytes(StandardCharsets.UTF_8));
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        StringBuilder hexString = new StringBuilder();
+//        for (byte b : messageDigest) {
+//            hexString.append(String.format("%02X", 0xFF & b));
+//        }
+//        String senhahex = hexString.toString();
+//        System.out.println(senhahex);
+//        usuarioRecebido.setHashSenhaUser(senhahex);
+
         Usuario usuarioCadastrado = usuarioRepository.save(usuarioRecebido);
 
         List<Perfil> perfis = modeloCadastroUsuarioPerfil.getPerfisUsuario();
@@ -91,18 +116,10 @@ public class UsuarioService {
             usuarioPerfilRepository.save(usuarioPerfil);
         }
 
-        List<Perfil> perfisVinculados = usuarioPerfilRepository.findByUsuario(usuarioCadastrado).stream()
-                .map(UsuarioPerfil::getPerfil)
-                .toList();
-
-        ModeloCadastroUsuarioPerfil modeloRetorno = new ModeloCadastroUsuarioPerfil();
-        modeloRetorno.setUsuario(usuarioCadastrado);
-        modeloRetorno.setPerfisUsuario(perfisVinculados);
-
-        return modeloRetorno;
+        return usuarioCadastrado.getId();
     }
 
-    public ModeloCadastroUsuarioPerfil editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
+    public int editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioMexido = modeloCadastroUsuarioPerfil.getUsuario();
 
         Usuario usuarioBanco = usuarioRepository.findById(usuarioMexido.getId()).orElse(null);
@@ -132,15 +149,8 @@ public class UsuarioService {
             usuarioPerfilRepository.save(usuarioPerfil);
         }
 
-        List<Perfil> perfisVinculados = usuarioPerfilRepository.findByUsuario(usuarioSalvo).stream()
-                .map(UsuarioPerfil::getPerfil)
-                .toList();
 
-        ModeloCadastroUsuarioPerfil modeloRetorno = new ModeloCadastroUsuarioPerfil();
-        modeloRetorno.setUsuario(usuarioSalvo);
-        modeloRetorno.setPerfisUsuario(perfisVinculados);
-
-        return modeloRetorno;
+        return usuarioSalvo.getId();
     }
 
     public ModeloCadastroUsuarioPerfil preEditar(Integer id) {

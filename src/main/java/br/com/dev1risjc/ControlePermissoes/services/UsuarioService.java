@@ -85,7 +85,7 @@ public class UsuarioService {
 
         Usuario usuarioRecebido = modeloCadastroUsuarioPerfil.getUsuario();
 
-//        Possível implementação para gravação de um hash da senha na tbl_Usuario ao invés da senha em si
+//        Possível implementação para gravação de um hash da senha na tbl_Usuario ao invés da senha em si por questões de segurança
 //        Só não implementei pq o campo é pequeno demais para aceitar o hash
 //        MessageDigest criptografia;
 //        byte[] messageDigest;

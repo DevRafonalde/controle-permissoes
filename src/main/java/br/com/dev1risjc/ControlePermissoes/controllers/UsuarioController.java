@@ -60,10 +60,6 @@ public class UsuarioController {
             return "usuarios/cadastro";
         }
 
-        // Como existe a função de clonar que vem com o usuário completo
-        // Aqui eu garanto que ele n vai atualizar o existente, mas sim gerar um novo registro
-        modeloCadastroUsuarioPerfil.getUsuario().setId(null);
-
         int idUsuarioCadastrado = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
 
         attributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso");

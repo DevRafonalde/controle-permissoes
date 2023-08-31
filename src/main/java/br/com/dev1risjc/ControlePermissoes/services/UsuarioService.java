@@ -199,7 +199,8 @@ public class UsuarioService {
 
     public ModeloCadastroUsuarioPerfil clonar(Integer id) {
         ModeloCadastroUsuarioPerfil usuarioExistente = listarEspecifico(id);
-        usuarioExistente.getUsuario().setId(null);
+//        usuarioExistente.getUsuario().setId(null);
+        usuarioExistente.setUsuario(null);
         return usuarioExistente;
     }
 }

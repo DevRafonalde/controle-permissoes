@@ -49,8 +49,8 @@ public class UsuarioController {
 
     @GetMapping("/clonar/{id}")
     public String clonar(@PathVariable Integer id, ModelMap modelMap) {
-        ModeloCadastroUsuarioPerfil usuario = usuarioService.clonar(id);
-        modelMap.addAttribute("usuario", usuario);
+        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.clonar(id);
+        modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
         return "usuarios/cadastro";
     }
 
@@ -59,6 +59,10 @@ public class UsuarioController {
         if (result.hasErrors()) {
             return "usuarios/cadastro";
         }
+
+        // Como existe a função de clonar que vem com o usuário completo
+        // Aqui eu garanto que ele n vai atualizar o existente, mas sim gerar um novo registro
+        modeloCadastroUsuarioPerfil.getUsuario().setId(null);
 
         int idUsuarioCadastrado = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
 

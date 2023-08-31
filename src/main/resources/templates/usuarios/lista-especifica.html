@@ -7,7 +7,10 @@
 		<main role="main" class="flex-shrink-0">
 			<div class="container" id="listagem">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-start">
-					<a class="btn btn-primary" role="button" th:href="@{/usuarios/cadastrar}">Adicionar novo Usuário</a>
+					<a class="btn btn-primary" role="button" th:href="@{/usuarios/preEditar/{id} (id=${usuario.usuario.id})}" th:object="${usuario}">Editar Usuário</a>
+					<div class="col-md text-end">
+						<a class="btn btn-primary" role="button" th:href="@{/usuarios/clonar/{id} (id=${usuario.usuario.id})}" th:object="${usuario}">Clonar Usuário</a>
+					</div>
 				</div>
 				<br>
 				<div th:replace="~{fragments/alert}"></div>
@@ -41,6 +44,7 @@
 					</tbody>
 				</table>
 	        </div>
+			<a class="btn btn-secondary" th:href="@{/usuarios/listar}" role="button">Voltar</a>
 			<div th:replace="~{fragments/modal :: modal}"></div>
 	    </main>
 	</body>

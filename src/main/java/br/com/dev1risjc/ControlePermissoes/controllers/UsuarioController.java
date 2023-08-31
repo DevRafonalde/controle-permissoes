@@ -47,6 +47,13 @@ public class UsuarioController {
         return "usuarios/lista-especifica";
     }
 
+    @GetMapping("/clonar/{id}")
+    public String clonar(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroUsuarioPerfil usuario = usuarioService.clonar(id);
+        modelMap.addAttribute("usuario", usuario);
+        return "usuarios/cadastro";
+    }
+
     @PostMapping("/novo-usuario")
     public String novoUsuario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {

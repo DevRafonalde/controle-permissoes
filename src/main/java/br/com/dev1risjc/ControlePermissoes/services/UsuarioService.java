@@ -196,4 +196,10 @@ public class UsuarioService {
         todosPerfis.sort(Comparator.comparing(Perfil::getNome));
         return todosPerfis;
     }
+
+    public ModeloCadastroUsuarioPerfil clonar(Integer id) {
+        ModeloCadastroUsuarioPerfil usuarioExistente = listarEspecifico(id);
+        usuarioExistente.getUsuario().setId(null);
+        return usuarioExistente;
+    }
 }

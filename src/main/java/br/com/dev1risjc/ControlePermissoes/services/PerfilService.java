@@ -3,6 +3,7 @@ package br.com.dev1risjc.ControlePermissoes.services;
 import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoException;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -173,4 +174,9 @@ public class PerfilService {
         return sistemas;
     }
 
+    public ModeloCadastroPerfilPermissao clonar(Integer id) {
+        ModeloCadastroPerfilPermissao perfilExistente = listarEspecifico(id);
+        perfilExistente.setPerfil(null);
+        return perfilExistente;
+    }
 }

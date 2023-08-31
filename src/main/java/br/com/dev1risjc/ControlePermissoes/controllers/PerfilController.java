@@ -5,6 +5,7 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -44,6 +45,13 @@ public class PerfilController {
         ModeloCadastroPerfilPermissao perfilPermissao = perfilService.listarEspecifico(id);
         modelMap.addAttribute("perfilPermissao", perfilPermissao);
         return "perfis/lista-especifica";
+    }
+
+    @GetMapping("/clonar/{id}")
+    public String clonar(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.clonar(id);
+        modelMap.addAttribute("modeloCadastroPerfilPermissao", modeloCadastroPerfilPermissao);
+        return "perfis/cadastro";
     }
 
     @PostMapping("/novo-perfil")

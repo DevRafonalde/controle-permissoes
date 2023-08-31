@@ -8,6 +8,9 @@
 	        <div class="container text-center">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-start">
 					<a class="btn btn-primary" role="button" th:href="@{/perfis/cadastrar}">Adicionar novo Perfil</a>
+					<div class="col-md text-end">
+						<a class="btn btn-primary" role="button" th:href="@{/perfis/clonar/{id} (id=${perfilPermissao.perfil.id})}" th:object="${perfilPermissao}">Clonar Perfil</a>
+					</div>
 				</div>
 				<br>
 				<div th:replace="~{fragments/alert}"></div>

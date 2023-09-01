@@ -9,7 +9,6 @@
 				<h1 class="display-4">Edição de Permissão</h1>
 				<div th:replace="~{fragments/alert}"></div>
 	            <form th:action="@{/permissoes/nova-permissao}" th:object="${permissao}" method="POST">
-					<div th:replace="~{fragments/validacao :: validacao}"></div>
 	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label for="nome">Nome:</label>

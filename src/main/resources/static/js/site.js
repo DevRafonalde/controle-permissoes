@@ -1,19 +1,6 @@
 setTraducaoDataTable('#table-permissoes')
 setTraducaoDataTable('#table-perfis')
 setTraducaoDataTable('#table-usuarios')
-$('.btn-total-contatos').click(function () {
-    var usuarioId = $(this).attr('usuario-id');
-    var urlCompleta = '/Usuario/ListarContatosPorUsuario/' + usuarioId;
-    console.log(urlCompleta);
-    $.ajax({
-        type: 'GET',
-        url: urlCompleta,
-        success: function (result) {
-            $("#corpoModal").html(result)
-            setTraducaoDataTable('#table-contatos-usuario');
-        }
-    })
-})
 
 function setTraducaoDataTable(id) {
     $(id).DataTable({
@@ -48,30 +35,10 @@ function setTraducaoDataTable(id) {
 
 var url = '';
 
-$('button[id*="btn_"]').click(function() {
-    url = "http://localhost:8603/" + $(this).attr('id').split("_")[1];
-});
+function deletePerfil(obj) {
+    url = "http://localhost:8603/" + $(obj).attr('id').split("_")[1];
+}
 
 $('#confirmarExclusao').click(function() {
     document.location.href = url;
 });
-
-$(function() {
-    $('[data-toggle="popover"]').popover();
-});
-
-$(document).ready(function(){
-    $(".navbar-toggle").click(function(){
-        $(".sidebar").toggleClass("sidebar-open");
-    })
-});
-
-var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-
-var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-})
-
-var popover = new bootstrap.Popover(document.querySelector('.popover-dismiss'), {
-    trigger: 'focus'
-})

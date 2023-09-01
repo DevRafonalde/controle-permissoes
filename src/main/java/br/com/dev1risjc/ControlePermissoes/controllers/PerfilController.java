@@ -1,11 +1,9 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.PerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
-import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -55,16 +53,15 @@ public class PerfilController {
     }
 
     @PostMapping("/novo-perfil")
-    public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, ModelMap modelMap) {
+    public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "perfis/cadastro";
         }
 
-        ModeloCadastroPerfilPermissao perfilPermissao = perfilService.novoPerfil(modeloCadastroPerfilPermissao);
+        int idPerfilCadastrado = perfilService.novoPerfil(modeloCadastroPerfilPermissao);
 
-        modelMap.addAttribute("sucesso", "Perfil criado com sucesso");
-        modelMap.addAttribute("perfilPermissao", perfilPermissao);
-        return "perfis/lista-especifica";
+        attributes.addFlashAttribute("sucesso", "Perfil criado com sucesso");
+        return "redirect:/perfis/listar-especifico" + idPerfilCadastrado;
     }
 
     @PostMapping("/editar")
@@ -128,8 +125,8 @@ public class PerfilController {
     }
 
     @ModelAttribute("permissoes")
-    public List<Permissao> getPermissoes(PerfilPermissao perfilPermissao) {
-        return perfilService.getPermissoes(perfilPermissao);
+    public List<Permissao> getPermissoes() {
+        return perfilService.getPermissoes();
     }
 
     @ModelAttribute("sistemas")

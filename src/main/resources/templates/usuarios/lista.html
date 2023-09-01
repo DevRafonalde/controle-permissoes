@@ -32,7 +32,7 @@
 									<a class="btn btn-info btn-sm" th:href="@{/usuarios/preEditar/{id} (id=${c.id})}" role="button">
 										<span title="Editar" aria-hidden="true"><i class="fa-solid fa-pencil"></i></span>
 									</a>
-									<button th:id="${#strings.concat('btn_usuarios/deletar/', c.id)}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal">
+									<button th:id="${#strings.concat('btn_usuarios/deletar/', c.id)}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal" onclick="deletePerfil(this)">
 										<span aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
 									</button>
 								</div>
@@ -40,25 +40,6 @@
 						</tr>
 					</tbody>
 				</table>
-<!--				<nav aria-label="Page navigation example">-->
-<!--					<ul class="pagination justify-content-center">-->
-<!--						<li th:class="${paginaUsuarios.pagina == 1} ? 'page-item disabled' : 'page-item'">-->
-<!--							<a class="page-link" th:href="@{/usuarios/listar(pagina=${1}, direcao=${paginaUsuarios.direcao})}"><<</a>-->
-<!--						</li>-->
-<!--						<li th:class="${paginaUsuarios.pagina == 1} ? 'page-item disabled' : 'page-item'">-->
-<!--							<a class="page-link" th:href="@{/usuarios/listar(pagina=${paginaUsuarios.pagina - 1}, direcao=${paginaUsuarios.direcao})}"><</a>-->
-<!--						</li>-->
-<!--						<li class="page-item">-->
-<!--							<span class="page-link" th:text="|${paginaUsuarios.pagina} de ${paginaUsuarios.totalPaginas}|"></span>-->
-<!--						</li>-->
-<!--						<li th:class="${paginaUsuarios.pagina == paginaUsuarios.totalPaginas} ? 'page-item disabled' : 'page-item'">-->
-<!--							<a class="page-link" th:href="@{/usuarios/listar(pagina=${paginaUsuarios.pagina + 1}, direcao=${paginaUsuarios.direcao})}">></a>-->
-<!--						</li>-->
-<!--						<li th:class="${paginaUsuarios.pagina == paginaUsuarios.totalPaginas} ? 'page-item disabled' : 'page-item'">-->
-<!--							<a class="page-link" th:href="@{/usuarios/listar(pagina=${paginaUsuarios.totalPaginas}, direcao=${paginaUsuarios.direcao})}">>></a>-->
-<!--						</li>-->
-<!--					</ul>-->
-<!--				</nav>-->
 			</div>
 			<div th:replace="~{fragments/modal :: modal}"></div>
 		</main>

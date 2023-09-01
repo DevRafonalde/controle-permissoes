@@ -8,23 +8,32 @@
 			<div class="container" id="cadastro">
 				<h1 class="display-4">Cadastro de novo Perfil</h1>
 				<div th:replace="~{fragments/alert}"></div>
-	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST">
+	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST" class="needs-validation" novalidate>
 					<div th:replace="~{fragments/validacao :: validacao}"></div>
-	                <div class="row">
+	                <div class="row needs-validation">
 	                    <div class="col-md-6">
-	                        <label for="nome">Nome:</label>
-	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}"/>
+	                        <label class="form-label" for="nome">Nome:</label>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}" required/>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.Nome}"></span>
+							</div>
 	                    </div>
 						<div class="col-md-6">
-							<label for="descricao">Descrição:</label>
-							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}"/>
+							<label class="form-label" for="descricao">Descrição:</label>
+							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}" required/>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.descricao}"></span>
+							</div>
 						</div>
 						<div class="col-md-6">
-							<label for="sistema">Sistema:</label>
-							<select id="sistema" class="form-select" th:field="*{perfil.sistema}">
-								<option value="">Selecione...</option>
+							<label class="form-label" for="sistema">Sistema:</label>
+							<select id="sistema" class="form-select" th:field="*{perfil.sistema}" th:classappend="${#fields.hasErrors('perfil.sistema')} ? 'is-invalid'" required>
+								<option value="" selected disabled>Selecione...</option>
 								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
 							</select>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.sistema}"></span>
+							</div>
 						</div>
 						<table class="table table-striped">
 							<thead class="thead-light">
@@ -56,7 +65,7 @@
 					<input type="hidden" id="perfil.id" th:field="*{perfil.id}">
 					<div class="d-grid gap-2">
 						<button type="submit" class="btn btn-primary">Adicionar</button>
-						<a class="btn btn-secondary" th:href="@{/perfis/listar}" role="button">Voltar</a>
+						<a class="btn btn-secondary" href="javascript:history.back()" role="button">Voltar</a>
 					</div>
 	            </form>
 	        </div>

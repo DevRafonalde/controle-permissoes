@@ -58,7 +58,7 @@ public class Usuario {
 
     @Column(name = "CaixaVirtual")
     @Getter @Setter
-    private Boolean caixaVirtual;
+    private Boolean caixaVirtual = false;
 
     @Column(name = "Observacao")
     @Getter @Setter

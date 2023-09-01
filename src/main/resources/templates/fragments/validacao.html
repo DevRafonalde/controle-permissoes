@@ -6,9 +6,9 @@
   <body>
     <div th:if="${#fields.hasAnyErrors()}" th:fragment="validacao">
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <div th:each="erro : ${#fields.detailedErrors()}">
+        <div th:each="error : ${#fields.detailedErrors()}">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          <span th:text="${erro.message}"></span>
+          <span th:text="${error.message}"></span>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>

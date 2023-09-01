@@ -33,7 +33,7 @@
 									<a class="btn btn-info btn-sm" th:href="@{/permissoes/preEditar/{id} (id=${p.id})}" role="button">
 										<span title="Editar" aria-hidden="true"><i class="fa-solid fa-pencil"></i></span>
 									</a>
-									<button th:id="${#strings.concat('btn_permissoes/deletar/', p.id)}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal">
+									<button th:id="${#strings.concat('btn_permissoes/deletar/', p.id)}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal" onclick="deletePerfil(this)">
 										<span aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
 									</button>
 								</div>

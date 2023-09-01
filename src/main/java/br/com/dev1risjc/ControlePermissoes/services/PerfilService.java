@@ -3,19 +3,13 @@ package br.com.dev1risjc.ControlePermissoes.services;
 import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoException;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
-import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PerfilService {
@@ -59,7 +53,7 @@ public class PerfilService {
 
     }
 
-    public ModeloCadastroPerfilPermissao novoPerfil(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
+    public int novoPerfil(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
         Perfil perfilRecebido = modeloCadastroPerfilPermissao.getPerfil();
         Perfil perfilNovo = perfilRepository.save(perfilRecebido);
 
@@ -73,15 +67,7 @@ public class PerfilService {
             perfilPermissaoRepository.save(perfilPermissao);
         }
 
-        List<Permissao> permissoesVinculadas = perfilPermissaoRepository.findByPerfil(perfilNovo).stream()
-                .map(PerfilPermissao::getPermissao)
-                .toList();
-
-        ModeloCadastroPerfilPermissao modeloRetorno = new ModeloCadastroPerfilPermissao();
-        modeloRetorno.setPerfil(perfilNovo);
-        modeloRetorno.setPermissoesPerfil(permissoesVinculadas);
-
-        return modeloRetorno;
+        return perfilNovo.getId();
 
     }
 
@@ -156,13 +142,7 @@ public class PerfilService {
         perfilRepository.delete(perfilDelete);
     }
 
-    public List<Permissao> getPermissoes(PerfilPermissao perfilPermissao) {
-        if (Objects.nonNull(perfilPermissao.getId())){
-            Perfil perfil = perfilRepository.findById(perfilPermissao.getId()).orElse(null);
-            List<Integer> idsPermissoes = perfilPermissaoRepository.findByPerfil(perfil).stream().filter(p -> Objects.nonNull(p.getPerfil())).map(u -> u.getPermissao().getId()).toList();
-            List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAllById(idsPermissoes);
-            return permissoes.stream().sorted(Comparator.comparing(Permissao::getNome)).toList();
-        }
+    public List<Permissao> getPermissoes() {
         List<Permissao> todasPermissoes = (List<Permissao>) permissaoRepository.findAll();
         todasPermissoes.sort(Comparator.comparing(Permissao::getNome));
         return todasPermissoes;

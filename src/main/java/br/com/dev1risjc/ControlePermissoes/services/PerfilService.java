@@ -3,6 +3,7 @@ package br.com.dev1risjc.ControlePermissoes.services;
 import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoException;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
 import org.springframework.stereotype.Service;
 
@@ -158,5 +159,25 @@ public class PerfilService {
         ModeloCadastroPerfilPermissao perfilExistente = listarEspecifico(id);
         perfilExistente.setPerfil(null);
         return perfilExistente;
+    }
+
+    public ModeloCadastroPerfilUsuario listarUsuariosVinculados(Integer id) {
+        Perfil perfil = perfilRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(perfil)) {
+            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
+        }
+
+        ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = new ModeloCadastroPerfilUsuario();
+        modeloCadastroPerfilUsuario.setPerfil(perfil);
+        List<Usuario> permissoes = usuarioPerfilRepository.findByPerfil(perfil).stream()
+                .map(UsuarioPerfil::getUsuario)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
+                .toList();
+
+        modeloCadastroPerfilUsuario.setUsuariosPerfil(permissoes);
+
+        return modeloCadastroPerfilUsuario;
     }
 }

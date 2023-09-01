@@ -4,6 +4,7 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -35,6 +36,13 @@ public class PerfilController {
     public String listar(ModelMap modelMap) {
         List<Perfil> perfis = perfilService.listarTodos();
         modelMap.addAttribute("perfis", perfis);
+        return "perfis/lista";
+    }
+
+    @GetMapping("/listar-usuarios-vinculados/{id}")
+    public String listarUsuariosVinculados(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = perfilService.listarUsuariosVinculados(id);
+        modelMap.addAttribute("modeloCadastroPerfilUsuario", modeloCadastroPerfilUsuario);
         return "perfis/lista";
     }
 

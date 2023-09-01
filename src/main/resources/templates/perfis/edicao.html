@@ -9,15 +9,20 @@
 				<h1 class="display-4">Edição de Perfil</h1>
 				<div th:replace="~{fragments/alert}"></div>
 	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST">
-					<div th:replace="~{fragments/validacao :: validacao}"></div>
 	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label for="nome">Nome:</label>
-	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}"/>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}" th:classappend="${#fields.hasErrors('perfil.Nome')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.descricao}"></span>
+							</div>
 	                    </div>
 						<div class="col-md-6">
 							<label for="descricao">Descrição:</label>
-							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}"/>
+							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}" th:classappend="${#fields.hasErrors('perfil.descricao')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.descricao}"></span>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<label for="sistema">Sistema:</label>
@@ -25,6 +30,9 @@
 								<option value="">Selecione...</option>
 								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
 							</select>
+							<div class="invalid-feedback">
+								<span th:errors="*{perfil.descricao}"></span>
+							</div>
 						</div>
 						<table class="table table-striped">
 							<thead class="thead-light">
@@ -41,7 +49,7 @@
 								<th scope="row" th:text="${contagem.count}">1</th>
 								<td>
 									<select th:field="*{permissoesPerfil[__${contagem.index}__]}" class="form-select">
-										<option disabled value="">Selecione...</option>
+										<option selected value="">Selecione...</option>
 										<option th:each="p : ${permissoes}" th:value="${p.id}" th:text="${p.nome}"></option>
 									</select>
 								</td>

@@ -8,26 +8,25 @@
 			<div class="container" id="cadastro">
 				<h1 class="display-4">Cadastro de novo Perfil</h1>
 				<div th:replace="~{fragments/alert}"></div>
-	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST" class="needs-validation" novalidate>
-					<div th:replace="~{fragments/validacao :: validacao}"></div>
-	                <div class="row needs-validation">
+	            <form th:action="@{/perfis/novo-perfil}" th:object="${modeloCadastroPerfilPermissao}" method="POST">
+	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label class="form-label" for="nome">Nome:</label>
-	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}" required/>
+	                        <input type="text" class="form-control" id="nome" placeholder="Nome Perfil" autofocus="autofocus" th:field="*{perfil.Nome}" th:classappend="${#fields.hasErrors('perfil.Nome')} ? 'is-invalid'"/>
 							<div class="invalid-feedback">
 								<span th:errors="*{perfil.Nome}"></span>
 							</div>
 	                    </div>
 						<div class="col-md-6">
 							<label class="form-label" for="descricao">Descrição:</label>
-							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}" required/>
+							<input type="text" class="form-control" id="descricao" placeholder="Descricao Perfil" autofocus="autofocus" th:field="*{perfil.descricao}" th:classappend="${#fields.hasErrors('perfil.descricao')} ? 'is-invalid'"/>
 							<div class="invalid-feedback">
 								<span th:errors="*{perfil.descricao}"></span>
 							</div>
 						</div>
 						<div class="col-md-6">
 							<label class="form-label" for="sistema">Sistema:</label>
-							<select id="sistema" class="form-select" th:field="*{perfil.sistema}" th:classappend="${#fields.hasErrors('perfil.sistema')} ? 'is-invalid'" required>
+							<select id="sistema" class="form-select" th:field="*{perfil.sistema}" th:classappend="${#fields.hasErrors('perfil.sistema')} ? 'is-invalid'">
 								<option value="" selected disabled>Selecione...</option>
 								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
 							</select>
@@ -50,7 +49,7 @@
 								<th scope="row" th:text="${contagem.count}">1</th>
 								<td>
 									<select th:field="*{permissoesPerfil[__${contagem.index}__]}" class="form-select">
-										<option selected disabled value="">Selecione...</option>
+										<option selected value="">Selecione...</option>
 										<option th:each="p : ${permissoes}" th:value="${p.id}" th:text="${p.nome}"></option>
 									</select>
 								</td>

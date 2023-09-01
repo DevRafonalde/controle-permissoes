@@ -1,6 +1,8 @@
 package br.com.dev1risjc.ControlePermissoes.models.entities.orm;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Objects;
@@ -17,15 +19,18 @@ public class Permissao {
     @Getter @Setter
     private Integer id;
 
+    @NotNull(message = "Selecione o sistema relativo à permissão")
     @ManyToOne
     @JoinColumn(name = "ID_Sistema")
     @Setter
     private Sistema sistema;
 
+    @NotBlank(message = "O nome da permissão é obrigatório")
     @Column(name = "Nome")
     @Getter @Setter
     private String Nome;
 
+    @NotBlank(message = "Insira uma breve descrição sobre o funcionamento da descrição")
     @Column(name = "Descricao")
     @Getter @Setter
     private String descricao;
@@ -42,6 +47,7 @@ public class Permissao {
     @Getter @Setter
     private Boolean desabilitado = false;
 
+    @NotBlank(message = "Insira um mnemônico para essa permissão")
     @Column(name = "Mnemonico")
     @Getter @Setter
     private String mnemonico;

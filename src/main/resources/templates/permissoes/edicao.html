@@ -14,10 +14,16 @@
 	                    <div class="col-md-6">
 	                        <label for="nome">Nome:</label>
 	                        <input type="text" class="form-control" id="nome" placeholder="Nome Permissão" autofocus="autofocus" th:field="*{nome}" th:classappend="${#fields.hasErrors('Nome')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{Nome}"></span>
+							</div>
 	                    </div>
 						<div class="col-md-6">
 							<label for="descricao">Descrição:</label>
 							<input type="text" class="form-control" id="descricao" placeholder="Descrição" autofocus="autofocus" th:field="*{descricao}" th:classappend="${#fields.hasErrors('descricao')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{descricao}"></span>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<label for="sistema">Sistema:</label>
@@ -25,6 +31,9 @@
 								<option value="">Selecione...</option>
 								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
 							</select>
+							<div class="invalid-feedback">
+								<span th:errors="*{sistema}"></span>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<label for="permissaoSuperior">Permissão Superior:</label>
@@ -32,10 +41,16 @@
 								<option value="">Selecione...</option>
 								<option th:each="p : ${listaPermissoesCadastro}" th:value="${p.id}" th:text="${p.nome}">Permissão Superior</option>
 							</select>
+							<div class="invalid-feedback">
+								<span th:errors="*{idPermissaoSuperior}"></span>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<label for="mnemonico">Nome:</label>
 							<input type="text" class="form-control" id="mnemonico" placeholder="Mnemônico" autofocus="autofocus" th:field="*{mnemonico}" th:classappend="${#fields.hasErrors('mnemonico')} ? 'is-invalid'"/>
+							<div class="invalid-feedback">
+								<span th:errors="*{mnemonico}"></span>
+							</div>
 						</div>
 	                </div>
 					<hr class="my-1" style="opacity: 0;">

@@ -30,7 +30,7 @@ public class Permissao {
     @Getter @Setter
     private String Nome;
 
-    @NotBlank(message = "Insira uma breve descrição sobre o funcionamento da descrição")
+    @NotBlank(message = "Insira uma breve descrição sobre o funcionamento da permissão")
     @Column(name = "Descricao")
     @Getter @Setter
     private String descricao;

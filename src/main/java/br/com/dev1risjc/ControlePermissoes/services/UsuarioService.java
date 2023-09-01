@@ -119,7 +119,7 @@ public class UsuarioService {
         return usuarioCadastrado.getId();
     }
 
-    public int editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
+    public Usuario editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioMexido = modeloCadastroUsuarioPerfil.getUsuario();
 
         Usuario usuarioBanco = usuarioRepository.findById(usuarioMexido.getId()).orElse(null);
@@ -136,6 +136,8 @@ public class UsuarioService {
             }
         }
 
+        usuarioMexido.setSenhaUser(usuarioBanco.getSenhaUser());
+
         Usuario usuarioSalvo = usuarioRepository.save(usuarioMexido);
         List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByUsuario(modeloCadastroUsuarioPerfil.getUsuario());
         usuarioPerfilRepository.deleteAll(registrosExistentes);
@@ -150,7 +152,7 @@ public class UsuarioService {
         }
 
 
-        return usuarioSalvo.getId();
+        return usuarioSalvo;
     }
 
     public ModeloCadastroUsuarioPerfil preEditar(Integer id) {

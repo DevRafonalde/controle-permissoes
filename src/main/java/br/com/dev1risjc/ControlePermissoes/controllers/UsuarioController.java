@@ -63,7 +63,7 @@ public class UsuarioController {
         int idUsuarioCadastrado = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
 
         attributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso");
-        return "redirect:/usuarios/listar-especifico" + idUsuarioCadastrado;
+        return "redirect:/usuarios/listar-especifico/" + idUsuarioCadastrado;
     }
 
     @PostMapping("/editar")
@@ -72,10 +72,16 @@ public class UsuarioController {
             return "usuarios/edicao";
         }
 
-        int idUsuarioEditado = usuarioService.editar(modeloCadastroUsuarioPerfil);
+        Usuario usuarioEditado = usuarioService.editar(modeloCadastroUsuarioPerfil);
 
         attributes.addFlashAttribute("sucesso", "Funcionário editado com sucesso");
-        return "redirect:/usuarios/listar-especifico" + idUsuarioEditado;
+
+        if (usuarioEditado.getAtivo()) {
+            return "redirect:/usuarios/listar-especifico/" + usuarioEditado.getId();
+        } else {
+            return "redirect:/usuarios/listar";
+        }
+
     }
 
     @GetMapping("/preEditar/{id}")

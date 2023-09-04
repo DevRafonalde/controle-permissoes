@@ -42,3 +42,7 @@ function deletePerfil(obj) {
 $('#confirmarExclusao').click(function() {
     document.location.href = url;
 });
+
+$(".check-exibicao").on("click", function(event) {
+    event.preventDefault();
+})

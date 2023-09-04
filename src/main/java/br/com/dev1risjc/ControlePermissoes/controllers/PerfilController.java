@@ -29,6 +29,7 @@ public class PerfilController {
 
     @GetMapping("/cadastrar")
     public String cadastrar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
+        perfilService.setClonar(null);
         return "perfis/cadastro";
     }
 
@@ -43,7 +44,7 @@ public class PerfilController {
     public String listarUsuariosVinculados(@PathVariable Integer id, ModelMap modelMap) {
         ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = perfilService.listarUsuariosVinculados(id);
         modelMap.addAttribute("modeloCadastroPerfilUsuario", modeloCadastroPerfilUsuario);
-        return "perfis/lista";
+        return "perfis/lista-usuarios-vinculados";
     }
 
     @GetMapping("/listar-especifico/{id}")
@@ -69,7 +70,7 @@ public class PerfilController {
         int idPerfilCadastrado = perfilService.novoPerfil(modeloCadastroPerfilPermissao);
 
         attributes.addFlashAttribute("sucesso", "Perfil criado com sucesso");
-        return "redirect:/perfis/listar-especifico" + idPerfilCadastrado;
+        return "redirect:/perfis/listar-especifico/" + idPerfilCadastrado;
     }
 
     @PostMapping("/editar")

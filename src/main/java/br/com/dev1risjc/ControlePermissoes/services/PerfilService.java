@@ -5,6 +5,8 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,9 @@ public class PerfilService {
     private SistemasRepository sistemasRepository;
     private UsuarioPerfilRepository usuarioPerfilRepository;
 
+    @Getter @Setter
+    private Integer clonar;
+
     public PerfilService(PerfilRepository perfilRepository, PerfilPermissaoRepository perfilPermissaoRepository, PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, UsuarioPerfilRepository usuarioPerfilRepository) {
         this.perfilRepository = perfilRepository;
         this.perfilPermissaoRepository = perfilPermissaoRepository;
@@ -34,11 +39,7 @@ public class PerfilService {
     }
 
     public ModeloCadastroPerfilPermissao listarEspecifico(Integer id) {
-        Perfil perfil = perfilRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(perfil)) {
-            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
-        }
+        Perfil perfil = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
         ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = new ModeloCadastroPerfilPermissao();
         modeloCadastroPerfilPermissao.setPerfil(perfil);
@@ -68,6 +69,19 @@ public class PerfilService {
             perfilPermissaoRepository.save(perfilPermissao);
         }
 
+        if (Objects.nonNull(clonar)) {
+            List<Usuario> usuariosVinculados = listarUsuariosVinculados(clonar).getUsuariosPerfil();
+
+            for (Usuario usuario : usuariosVinculados) {
+                UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
+                usuarioPerfil.setPerfil(perfilNovo);
+                usuarioPerfil.setDataHora(LocalDateTime.now());
+                usuarioPerfil.setUsuario(usuario);
+                usuarioPerfilRepository.save(usuarioPerfil);
+            }
+        }
+
+        setClonar(null);
         return perfilNovo.getId();
 
     }
@@ -75,11 +89,7 @@ public class PerfilService {
     public ModeloCadastroPerfilPermissao editar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
         Perfil perfilMexido = modeloCadastroPerfilPermissao.getPerfil();
 
-        Perfil perfilBanco = perfilRepository.findById(perfilMexido.getId()).orElse(null);
-
-        if (Objects.isNull(perfilBanco)) {
-            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
-        }
+        perfilRepository.findById(perfilMexido.getId()).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
         Perfil perfilSalvo = perfilRepository.save(perfilMexido);
         List<PerfilPermissao> registrosExistentes = perfilPermissaoRepository.findByPerfil(modeloCadastroPerfilPermissao.getPerfil());
@@ -106,11 +116,7 @@ public class PerfilService {
     }
 
     public ModeloCadastroPerfilPermissao preEditar(int id) {
-        Perfil perfilBanco = perfilRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(perfilBanco)) {
-            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
-        }
+        Perfil perfilBanco = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
         List<Permissao> permissoesPerfil = perfilPermissaoRepository.findByPerfil(perfilBanco).stream()
                 .map(PerfilPermissao::getPermissao)
@@ -124,11 +130,7 @@ public class PerfilService {
     }
 
     public void deletar(int id) {
-        Perfil perfilDelete = perfilRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(perfilDelete)) {
-            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
-        }
+        Perfil perfilDelete = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
         List<UsuarioPerfil> usuariosPerfil = usuarioPerfilRepository.findByPerfil(perfilDelete);
         if (!usuariosPerfil.isEmpty()) {
@@ -156,23 +158,25 @@ public class PerfilService {
     }
 
     public ModeloCadastroPerfilPermissao clonar(Integer id) {
+//        TODO Copiar relação de usuários vinculados ao salvar
         ModeloCadastroPerfilPermissao perfilExistente = listarEspecifico(id);
-        perfilExistente.setPerfil(null);
+        setClonar(perfilExistente.getPerfil().getId());
+        perfilExistente.getPerfil().setNome(null);
+        perfilExistente.getPerfil().setDescricao(null);
+        perfilExistente.getPerfil().setId(null);
+        perfilExistente.getPerfil().setExcluido(null);
         return perfilExistente;
     }
 
     public ModeloCadastroPerfilUsuario listarUsuariosVinculados(Integer id) {
-        Perfil perfil = perfilRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(perfil)) {
-            throw new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados");
-        }
+        Perfil perfil = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
         ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = new ModeloCadastroPerfilUsuario();
         modeloCadastroPerfilUsuario.setPerfil(perfil);
         List<Usuario> permissoes = usuarioPerfilRepository.findByPerfil(perfil).stream()
                 .map(UsuarioPerfil::getUsuario)
                 .filter(Objects::nonNull)
+                .filter(Usuario::getAtivo)
                 .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
                 .toList();
 

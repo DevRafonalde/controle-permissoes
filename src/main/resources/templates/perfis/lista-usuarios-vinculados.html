@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html th:replace="~{layout.html :: layout(~{::main})}">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+		<main role="main" class="flex-shrink-0">
+	        <div class="container text-center">
+				<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+					<a class="btn btn-primary" role="button" th:href="@{/perfis/preEditar/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Editar Perfil</a>
+					<a class="btn btn-primary" role="button" th:href="@{/perfis/listar-especifico/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Listar por Permissões</a>
+					<a class="btn btn-primary" role="button" th:href="@{/perfis/clonar/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Clonar Perfil</a>
+				</div>
+				<br>
+				<div th:replace="~{fragments/alert}"></div>
+				<br>
+				<h1 class="display-4 text-center" th:text="${modeloCadastroPerfilUsuario.perfil.Nome}" th:object="${modeloCadastroPerfilUsuario}">Nome Perfil</h1>
+				<table class="table table-striped table-hover" id="table-perfis">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Nome</th>
+							<th>Nome de Usuário</th>
+							<th>Caixa Virtual</th>
+							<th>Observação</th>
+							<th>Ação</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="u : ${modeloCadastroPerfilUsuario.usuariosPerfil}">
+							<td th:text="${u.id}">Id</td>
+							<td th:text="${u.NomeAmigavel}">Nome</td>
+							<td th:text="${u.nomeUser}">Nome de Usuário</td>
+							<td>
+								<input type="checkbox" class="form-check-input check-exibicao" id="u.caixaVirtual" th:checked="*{u.caixaVirtual}"/>
+							</td>
+							<td th:text="${u.observacao}">Observação</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Ações">
+									<button th:id="${#strings.concat('btn_funcionarios/deletar/', u.id)}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal">
+										<span title="Excluir" aria-hidden="true"><i class="fa-regular fa-circle-xmark"></i></span>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+	        </div>
+			<div th:replace="~{fragments/modal :: modal}"></div>
+	    </main>
+	</body>
+</html>		

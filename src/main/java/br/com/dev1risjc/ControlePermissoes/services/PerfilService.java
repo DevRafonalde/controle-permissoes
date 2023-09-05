@@ -22,16 +22,18 @@ public class PerfilService {
     private PermissaoRepository permissaoRepository;
     private SistemasRepository sistemasRepository;
     private UsuarioPerfilRepository usuarioPerfilRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Getter @Setter
     private Integer clonar;
 
-    public PerfilService(PerfilRepository perfilRepository, PerfilPermissaoRepository perfilPermissaoRepository, PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, UsuarioPerfilRepository usuarioPerfilRepository) {
+    public PerfilService(PerfilRepository perfilRepository, PerfilPermissaoRepository perfilPermissaoRepository, PermissaoRepository permissaoRepository, SistemasRepository sistemasRepository, UsuarioPerfilRepository usuarioPerfilRepository, UsuarioRepository usuarioRepository) {
         this.perfilRepository = perfilRepository;
         this.perfilPermissaoRepository = perfilPermissaoRepository;
         this.permissaoRepository = permissaoRepository;
         this.sistemasRepository = sistemasRepository;
         this.usuarioPerfilRepository = usuarioPerfilRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Perfil> listarTodos() {
@@ -181,6 +183,32 @@ public class PerfilService {
                 .toList();
 
         modeloCadastroPerfilUsuario.setUsuariosPerfil(permissoes);
+
+        return modeloCadastroPerfilUsuario;
+    }
+
+    public List<Usuario> getUsuarios() {
+        List<Usuario> usuariosBanco = (List<Usuario>) usuarioRepository.findAll();
+        return usuariosBanco.stream()
+                .filter(usuario -> Objects.nonNull(usuario.getNomeAmigavel()) && usuario.getAtivo())
+                .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
+                .toList();
+    }
+
+    public ModeloCadastroPerfilUsuario vincularUsuariosEmLote(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario) {
+        Perfil perfilRecebido = modeloCadastroPerfilUsuario.getPerfil();
+        List<Usuario> usuarios = modeloCadastroPerfilUsuario.getUsuariosPerfil();
+
+        List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByPerfil(perfilRecebido);
+        usuarioPerfilRepository.deleteAll(registrosExistentes);
+
+            for (Usuario usuario : usuarios) {
+                UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
+                usuarioPerfil.setPerfil(perfilRecebido);
+                usuarioPerfil.setDataHora(LocalDateTime.now());
+                usuarioPerfil.setUsuario(usuario);
+                usuarioPerfilRepository.save(usuarioPerfil);
+            }
 
         return modeloCadastroPerfilUsuario;
     }

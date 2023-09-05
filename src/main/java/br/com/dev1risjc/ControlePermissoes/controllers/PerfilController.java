@@ -3,6 +3,7 @@ package br.com.dev1risjc.ControlePermissoes.controllers;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
+import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
@@ -45,6 +46,20 @@ public class PerfilController {
         ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = perfilService.listarUsuariosVinculados(id);
         modelMap.addAttribute("modeloCadastroPerfilUsuario", modeloCadastroPerfilUsuario);
         return "perfis/lista-usuarios-vinculados";
+    }
+
+    @GetMapping("/vincular-usuarios-em-lote/{id}")
+    public String vincularUsuariosEmLote(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = perfilService.listarUsuariosVinculados(id);
+        modelMap.addAttribute("modeloCadastroPerfilUsuario", modeloCadastroPerfilUsuario);
+        return "perfis/usuarios-em-lote";
+    }
+
+    @PostMapping("/vincular-usuarios-em-lote")
+    public String vincularUsuariosEmLotePost(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, RedirectAttributes attributes) {
+        ModeloCadastroPerfilUsuario modeloRetorno = perfilService.vincularUsuariosEmLote(modeloCadastroPerfilUsuario);
+        attributes.addFlashAttribute("sucesso", "Usuários vinculados com sucesso");
+        return "redirect:/perfis/listar-usuarios-vinculados/" + modeloRetorno.getPerfil().getId();
     }
 
     @GetMapping("/listar-especifico/{id}")
@@ -116,6 +131,22 @@ public class PerfilController {
         return "perfis/edicao";
     }
 
+    @RequestMapping(value="/vincular-usuarios-em-lote", params={"addUsuario"})
+    public String addRowVinculoUsuario(final ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, final BindingResult bindingResult) {
+        if (Objects.isNull(modeloCadastroPerfilUsuario.getUsuariosPerfil())) {
+            modeloCadastroPerfilUsuario.setUsuariosPerfil(new ArrayList<>());
+        }
+        modeloCadastroPerfilUsuario.getUsuariosPerfil().add(0, new Usuario());
+        return "perfis/usuarios-em-lote";
+    }
+
+    @RequestMapping(value="/vincular-usuarios-em-lote", params={"removeUsuario"})
+    public String removeRowVinculoUsuario(final ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, final BindingResult bindingResult, final HttpServletRequest req) {
+        final Integer usuarioPerfilId = Integer.valueOf(req.getParameter("removeUsuario"));
+        modeloCadastroPerfilUsuario.getUsuariosPerfil().remove(usuarioPerfilId.intValue());
+        return "perfis/usuarios-em-lote";
+    }
+
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable int id, ModelMap modelMap) {
         ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.preEditar(id);
@@ -138,6 +169,11 @@ public class PerfilController {
     @ModelAttribute("sistemas")
     public List<Sistema> getSistemas() {
         return perfilService.getSistemas();
+    }
+
+    @ModelAttribute("usuarios")
+    public List<Usuario> getUsuarios() {
+        return perfilService.getUsuarios();
     }
 
 }

@@ -55,13 +55,6 @@ public class PerfilController {
         return "perfis/usuarios-em-lote";
     }
 
-    @PostMapping("/vincular-usuarios-em-lote")
-    public String vincularUsuariosEmLotePost(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, RedirectAttributes attributes) {
-        ModeloCadastroPerfilUsuario modeloRetorno = perfilService.vincularUsuariosEmLote(modeloCadastroPerfilUsuario);
-        attributes.addFlashAttribute("sucesso", "Usuários vinculados com sucesso");
-        return "redirect:/perfis/listar-usuarios-vinculados/" + modeloRetorno.getPerfil().getId();
-    }
-
     @GetMapping("/listar-especifico/{id}")
     public String listarEspecifico(@PathVariable Integer id, ModelMap modelMap) {
         ModeloCadastroPerfilPermissao perfilPermissao = perfilService.listarEspecifico(id);
@@ -74,6 +67,20 @@ public class PerfilController {
         ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.clonar(id);
         modelMap.addAttribute("modeloCadastroPerfilPermissao", modeloCadastroPerfilPermissao);
         return "perfis/cadastro";
+    }
+
+    @GetMapping("/preEditar/{id}")
+    public String preEditar(@PathVariable int id, ModelMap modelMap) {
+        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.preEditar(id);
+        modelMap.addAttribute("modeloCadastroPerfilPermissao", modeloCadastroPerfilPermissao);
+        return "perfis/edicao";
+    }
+
+    @GetMapping("/deletar/{id}")
+    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
+        perfilService.deletar(id);
+        attributes.addFlashAttribute("sucesso", "Perfil deletado com sucesso.");
+        return "redirect:/perfis/listar";
     }
 
     @PostMapping("/novo-perfil")
@@ -97,6 +104,13 @@ public class PerfilController {
         modelMap.addAttribute("sucesso", "Perfil salvo com sucesso");
         modelMap.addAttribute("perfilPermissao", perfilPermissao);
         return "perfis/lista-especifica";
+    }
+
+    @PostMapping("/vincular-usuarios-em-lote")
+    public String vincularUsuariosEmLotePost(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, RedirectAttributes attributes) {
+        ModeloCadastroPerfilUsuario modeloRetorno = perfilService.vincularUsuariosEmLote(modeloCadastroPerfilUsuario);
+        attributes.addFlashAttribute("sucesso", "Usuários vinculados com sucesso");
+        return "redirect:/perfis/listar-usuarios-vinculados/" + modeloRetorno.getPerfil().getId();
     }
 
     @RequestMapping(value="/novo-perfil", params={"addPermissao"})
@@ -145,20 +159,6 @@ public class PerfilController {
         final Integer usuarioPerfilId = Integer.valueOf(req.getParameter("removeUsuario"));
         modeloCadastroPerfilUsuario.getUsuariosPerfil().remove(usuarioPerfilId.intValue());
         return "perfis/usuarios-em-lote";
-    }
-
-    @GetMapping("/preEditar/{id}")
-    public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = perfilService.preEditar(id);
-        modelMap.addAttribute("modeloCadastroPerfilPermissao", modeloCadastroPerfilPermissao);
-        return "perfis/edicao";
-    }
-
-    @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
-        perfilService.deletar(id);
-        attributes.addFlashAttribute("sucesso", "Perfil deletado com sucesso.");
-        return "redirect:/perfis/listar";
     }
 
     @ModelAttribute("permissoes")

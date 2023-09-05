@@ -40,6 +40,23 @@ public class PerfilService {
         return (List<Perfil>) perfilRepository.findAll();
     }
 
+    public ModeloCadastroPerfilUsuario listarUsuariosVinculados(Integer id) {
+        Perfil perfil = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
+
+        ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = new ModeloCadastroPerfilUsuario();
+        modeloCadastroPerfilUsuario.setPerfil(perfil);
+        List<Usuario> permissoes = usuarioPerfilRepository.findByPerfil(perfil).stream()
+                .map(UsuarioPerfil::getUsuario)
+                .filter(Objects::nonNull)
+                .filter(Usuario::getAtivo)
+                .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
+                .toList();
+
+        modeloCadastroPerfilUsuario.setUsuariosPerfil(permissoes);
+
+        return modeloCadastroPerfilUsuario;
+    }
+
     public ModeloCadastroPerfilPermissao listarEspecifico(Integer id) {
         Perfil perfil = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
 
@@ -54,7 +71,46 @@ public class PerfilService {
         modeloCadastroPerfilPermissao.setPermissoesPerfil(permissoes);
 
         return modeloCadastroPerfilPermissao;
+    }
 
+    public ModeloCadastroPerfilPermissao clonar(Integer id) {
+        ModeloCadastroPerfilPermissao perfilExistente = listarEspecifico(id);
+        setClonar(perfilExistente.getPerfil().getId());
+        perfilExistente.getPerfil().setNome(null);
+        perfilExistente.getPerfil().setDescricao(null);
+        perfilExistente.getPerfil().setId(null);
+        perfilExistente.getPerfil().setExcluido(null);
+        return perfilExistente;
+    }
+
+    public ModeloCadastroPerfilPermissao preEditar(int id) {
+        Perfil perfilBanco = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
+
+        List<Permissao> permissoesPerfil = perfilPermissaoRepository.findByPerfil(perfilBanco).stream()
+                .map(PerfilPermissao::getPermissao)
+                .toList();
+
+        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = new ModeloCadastroPerfilPermissao();
+        modeloCadastroPerfilPermissao.setPerfil(perfilBanco);
+        modeloCadastroPerfilPermissao.setPermissoesPerfil(permissoesPerfil);
+
+        return modeloCadastroPerfilPermissao;
+    }
+
+    public void deletar(int id) {
+        Perfil perfilDelete = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
+
+        List<UsuarioPerfil> usuariosPerfil = usuarioPerfilRepository.findByPerfil(perfilDelete);
+        if (!usuariosPerfil.isEmpty()) {
+            usuarioPerfilRepository.deleteAll(usuariosPerfil);
+        }
+
+        List<PerfilPermissao> perfisPermissao = perfilPermissaoRepository.findByPerfil(perfilDelete);
+        if (!perfisPermissao.isEmpty()) {
+            perfilPermissaoRepository.deleteAll(perfisPermissao);
+        }
+
+        perfilRepository.delete(perfilDelete);
     }
 
     public int novoPerfil(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
@@ -117,34 +173,22 @@ public class PerfilService {
         return modeloRetorno;
     }
 
-    public ModeloCadastroPerfilPermissao preEditar(int id) {
-        Perfil perfilBanco = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
+    public ModeloCadastroPerfilUsuario vincularUsuariosEmLote(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario) {
+        Perfil perfilRecebido = modeloCadastroPerfilUsuario.getPerfil();
+        List<Usuario> usuarios = modeloCadastroPerfilUsuario.getUsuariosPerfil();
 
-        List<Permissao> permissoesPerfil = perfilPermissaoRepository.findByPerfil(perfilBanco).stream()
-                .map(PerfilPermissao::getPermissao)
-                .toList();
+        List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByPerfil(perfilRecebido);
+        usuarioPerfilRepository.deleteAll(registrosExistentes);
 
-        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = new ModeloCadastroPerfilPermissao();
-        modeloCadastroPerfilPermissao.setPerfil(perfilBanco);
-        modeloCadastroPerfilPermissao.setPermissoesPerfil(permissoesPerfil);
-
-        return modeloCadastroPerfilPermissao;
-    }
-
-    public void deletar(int id) {
-        Perfil perfilDelete = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
-
-        List<UsuarioPerfil> usuariosPerfil = usuarioPerfilRepository.findByPerfil(perfilDelete);
-        if (!usuariosPerfil.isEmpty()) {
-            usuarioPerfilRepository.deleteAll(usuariosPerfil);
+        for (Usuario usuario : usuarios) {
+            UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
+            usuarioPerfil.setPerfil(perfilRecebido);
+            usuarioPerfil.setDataHora(LocalDateTime.now());
+            usuarioPerfil.setUsuario(usuario);
+            usuarioPerfilRepository.save(usuarioPerfil);
         }
 
-        List<PerfilPermissao> perfisPermissao = perfilPermissaoRepository.findByPerfil(perfilDelete);
-        if (!perfisPermissao.isEmpty()) {
-            perfilPermissaoRepository.deleteAll(perfisPermissao);
-        }
-
-        perfilRepository.delete(perfilDelete);
+        return modeloCadastroPerfilUsuario;
     }
 
     public List<Permissao> getPermissoes() {
@@ -159,57 +203,11 @@ public class PerfilService {
         return sistemas;
     }
 
-    public ModeloCadastroPerfilPermissao clonar(Integer id) {
-//        TODO Copiar relação de usuários vinculados ao salvar
-        ModeloCadastroPerfilPermissao perfilExistente = listarEspecifico(id);
-        setClonar(perfilExistente.getPerfil().getId());
-        perfilExistente.getPerfil().setNome(null);
-        perfilExistente.getPerfil().setDescricao(null);
-        perfilExistente.getPerfil().setId(null);
-        perfilExistente.getPerfil().setExcluido(null);
-        return perfilExistente;
-    }
-
-    public ModeloCadastroPerfilUsuario listarUsuariosVinculados(Integer id) {
-        Perfil perfil = perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
-
-        ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = new ModeloCadastroPerfilUsuario();
-        modeloCadastroPerfilUsuario.setPerfil(perfil);
-        List<Usuario> permissoes = usuarioPerfilRepository.findByPerfil(perfil).stream()
-                .map(UsuarioPerfil::getUsuario)
-                .filter(Objects::nonNull)
-                .filter(Usuario::getAtivo)
-                .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
-                .toList();
-
-        modeloCadastroPerfilUsuario.setUsuariosPerfil(permissoes);
-
-        return modeloCadastroPerfilUsuario;
-    }
-
     public List<Usuario> getUsuarios() {
         List<Usuario> usuariosBanco = (List<Usuario>) usuarioRepository.findAll();
         return usuariosBanco.stream()
                 .filter(usuario -> Objects.nonNull(usuario.getNomeAmigavel()) && usuario.getAtivo())
                 .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
                 .toList();
-    }
-
-    public ModeloCadastroPerfilUsuario vincularUsuariosEmLote(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario) {
-        Perfil perfilRecebido = modeloCadastroPerfilUsuario.getPerfil();
-        List<Usuario> usuarios = modeloCadastroPerfilUsuario.getUsuariosPerfil();
-
-        List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByPerfil(perfilRecebido);
-        usuarioPerfilRepository.deleteAll(registrosExistentes);
-
-            for (Usuario usuario : usuarios) {
-                UsuarioPerfil usuarioPerfil = new UsuarioPerfil();
-                usuarioPerfil.setPerfil(perfilRecebido);
-                usuarioPerfil.setDataHora(LocalDateTime.now());
-                usuarioPerfil.setUsuario(usuario);
-                usuarioPerfilRepository.save(usuarioPerfil);
-            }
-
-        return modeloCadastroPerfilUsuario;
     }
 }

@@ -36,6 +36,31 @@ public class PermissaoService {
         return permissoes;
     }
 
+    public Permissao preEditar(int id) {
+        Permissao permissaoBanco = permissaoRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(permissaoBanco)) {
+            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
+        }
+
+        return permissaoBanco;
+    }
+
+    public void deletar(int id) {
+        Permissao permissaoDelete = permissaoRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(permissaoDelete)) {
+            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
+        }
+
+        List<PerfilPermissao> usosPermissao = perfilPermissaoRepository.findByPermissao(permissaoDelete);
+        if (!usosPermissao.isEmpty()) {
+            perfilPermissaoRepository.deleteAll(usosPermissao);
+        }
+
+        permissaoRepository.delete(permissaoDelete);
+    }
+
     public void novaPermissao(Permissao permissao) {
         if (Objects.isNull(ultimoId)) {
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
@@ -63,31 +88,6 @@ public class PermissaoService {
         ultimoId++;
         permissao.setId(ultimoId);
         permissaoRepository.save(permissao);
-    }
-
-    public Permissao preEditar(int id) {
-        Permissao permissaoBanco = permissaoRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(permissaoBanco)) {
-            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
-        }
-
-        return permissaoBanco;
-    }
-
-    public void deletar(int id) {
-        Permissao permissaoDelete = permissaoRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(permissaoDelete)) {
-            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
-        }
-
-        List<PerfilPermissao> usosPermissao = perfilPermissaoRepository.findByPermissao(permissaoDelete);
-        if (!usosPermissao.isEmpty()) {
-            perfilPermissaoRepository.deleteAll(usosPermissao);
-        }
-
-        permissaoRepository.delete(permissaoDelete);
     }
 
     public List<Sistema> getSistemas() {

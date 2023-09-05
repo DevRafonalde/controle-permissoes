@@ -50,6 +50,20 @@ public class UsuarioController {
         return "usuarios/cadastro";
     }
 
+    @GetMapping("/preEditar/{id}")
+    public String preEditar(@PathVariable Integer id, ModelMap modelMap) {
+        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.preEditar(id);
+        modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
+        return "usuarios/edicao";
+    }
+
+    @GetMapping("/deletar/{id}")
+    public String deletar(@PathVariable Integer id, RedirectAttributes attributes) {
+        usuarioService.deletar(id);
+        attributes.addFlashAttribute("sucesso", "Usuario deletado com sucesso.");
+        return "redirect:/usuarios/listar";
+    }
+
     @PostMapping("/novo-usuario")
     public String novoUsuario(@Valid ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
@@ -75,20 +89,6 @@ public class UsuarioController {
         } else {
             return "redirect:/usuarios/listar";
         }
-    }
-
-    @GetMapping("/preEditar/{id}")
-    public String preEditar(@PathVariable Integer id, ModelMap modelMap) {
-        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.preEditar(id);
-        modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
-        return "usuarios/edicao";
-    }
-
-    @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable Integer id, RedirectAttributes attributes) {
-        usuarioService.deletar(id);
-        attributes.addFlashAttribute("sucesso", "Usuario deletado com sucesso.");
-        return "redirect:/usuarios/listar";
     }
 
     @RequestMapping(value="/novo-usuario", params={"addPerfil"})

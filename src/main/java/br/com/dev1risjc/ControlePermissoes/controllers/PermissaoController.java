@@ -33,6 +33,19 @@ public class PermissaoController {
         return "permissoes/lista";
     }
 
+    @GetMapping("/preEditar/{id}")
+    public String preEditar(@PathVariable int id, ModelMap modelMap) {
+        modelMap.addAttribute("permissao", permissaoService.preEditar(id));
+        return "permissoes/edicao";
+    }
+
+    @GetMapping("/deletar/{id}")
+    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
+        permissaoService.deletar(id);
+        attributes.addFlashAttribute("sucesso", "Permissao deletada com sucesso.");
+        return "redirect:/permissoes/listar";
+    }
+
     @PostMapping("/nova-permissao")
     public String novaPermissao(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
@@ -54,19 +67,6 @@ public class PermissaoController {
         permissaoService.editar(permissao);
 
         attributes.addFlashAttribute("sucesso", "Permissao editada com sucesso.");
-        return "redirect:/permissoes/listar";
-    }
-
-    @GetMapping("/preEditar/{id}")
-    public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        modelMap.addAttribute("permissao", permissaoService.preEditar(id));
-        return "permissoes/edicao";
-    }
-
-    @GetMapping("/deletar/{id}")
-    public String deletar(@PathVariable int id, RedirectAttributes attributes) {
-        permissaoService.deletar(id);
-        attributes.addFlashAttribute("sucesso", "Permissao deletada com sucesso.");
         return "redirect:/permissoes/listar";
     }
 

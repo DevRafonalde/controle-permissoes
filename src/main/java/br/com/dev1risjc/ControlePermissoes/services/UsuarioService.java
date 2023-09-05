@@ -32,11 +32,7 @@ public class UsuarioService {
         this.usuarioPerfilRepository = usuarioPerfilRepository;
         this.perfilRepository = perfilRepository;
     }
-    //    Adiciona o meu validador personalizado
-//    @InitBinder
-//    public void initBinder(WebDataBinder binder) {
-//        binder.addValidators(new FuncionarioValidator());
-//    }
+
     public List<Usuario> listarTodos() {
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll();
         List<Usuario> perfisAmigaveis = usuarios.stream()
@@ -45,7 +41,7 @@ public class UsuarioService {
         perfisAmigaveis.forEach(
                 usuario -> usuario.setNomeAmigavel(
                         usuario.getNomeAmigavel()
-                                .substring(0 , 1)
+                                .substring(0, 1)
                                 .toUpperCase()
                                 .concat(usuario.getNomeAmigavel()
                                         .substring(1)
@@ -76,6 +72,44 @@ public class UsuarioService {
         return modeloCadastroUsuarioPerfil;
     }
 
+    public ModeloCadastroUsuarioPerfil clonar(Integer id) {
+        ModeloCadastroUsuarioPerfil usuarioExistente = listarEspecifico(id);
+        usuarioExistente.setUsuario(null);
+        return usuarioExistente;
+    }
+
+    public ModeloCadastroUsuarioPerfil preEditar(Integer id) {
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(usuarioBanco)) {
+            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
+        }
+
+        List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuarioBanco).stream()
+                .map(UsuarioPerfil::getPerfil)
+                .toList();
+
+        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
+        modeloCadastroUsuarioPerfil.setUsuario(usuarioBanco);
+        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfisUsuario);
+
+        return modeloCadastroUsuarioPerfil;
+    }
+
+    public void deletar(Integer id) {
+        Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
+
+        if (Objects.isNull(usuarioDelete)) {
+            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
+        }
+
+        List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
+        if (!vinculosUsuario.isEmpty()) {
+            usuarioPerfilRepository.deleteAll(vinculosUsuario);
+        }
+        usuarioRepository.delete(usuarioDelete);
+    }
+
     public int novoUsuario(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioExistente = usuarioRepository.findByNomeUser(modeloCadastroUsuarioPerfil.getUsuario().getNomeUser());
 
@@ -85,7 +119,7 @@ public class UsuarioService {
 
         Usuario usuarioRecebido = modeloCadastroUsuarioPerfil.getUsuario();
 
-//        Possível implementação para gravação de um hash da senha na tbl_Usuario ao invés da senha em si por questões de segurança
+//        Possível implementação para gravação de um hash da senha na tbl_Usuario ao invés da senha em si por questões de segurança e LGPD
 //        Só não implementei pq o campo é pequeno demais para aceitar o hash
 //        MessageDigest criptografia;
 //        byte[] messageDigest;
@@ -155,38 +189,6 @@ public class UsuarioService {
         return usuarioSalvo;
     }
 
-    public ModeloCadastroUsuarioPerfil preEditar(Integer id) {
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(usuarioBanco)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
-
-        List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuarioBanco).stream()
-                .map(UsuarioPerfil::getPerfil)
-                .toList();
-
-        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
-        modeloCadastroUsuarioPerfil.setUsuario(usuarioBanco);
-        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfisUsuario);
-
-        return modeloCadastroUsuarioPerfil;
-    }
-
-    public void deletar(Integer id) {
-        Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(usuarioDelete)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
-
-        List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
-        if (!vinculosUsuario.isEmpty()) {
-            usuarioPerfilRepository.deleteAll(vinculosUsuario);
-        }
-        usuarioRepository.delete(usuarioDelete);
-    }
-
     public List<Perfil> getPerfis(UsuarioPerfil usuarioPerfil) {
         if (Objects.nonNull(usuarioPerfil.getId())){
             Usuario usuario = usuarioRepository.findById(usuarioPerfil.getId()).orElse(null);
@@ -197,11 +199,5 @@ public class UsuarioService {
         List<Perfil> todosPerfis = (List<Perfil>) perfilRepository.findAll();
         todosPerfis.sort(Comparator.comparing(Perfil::getNome));
         return todosPerfis;
-    }
-
-    public ModeloCadastroUsuarioPerfil clonar(Integer id) {
-        ModeloCadastroUsuarioPerfil usuarioExistente = listarEspecifico(id);
-        usuarioExistente.setUsuario(null);
-        return usuarioExistente;
     }
 }

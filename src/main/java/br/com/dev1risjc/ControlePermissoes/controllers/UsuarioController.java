@@ -14,19 +14,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-
-    //    Adiciona o meu validador personalizado
-//    @InitBinder
-//    public void initBinder(WebDataBinder binder) {
-//        binder.addValidators(new FuncionarioValidator());
-//    }
 
     @GetMapping("/cadastrar")
     public String cadastrar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
@@ -61,7 +57,6 @@ public class UsuarioController {
         }
 
         int idUsuarioCadastrado = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
-
         attributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso");
         return "redirect:/usuarios/listar-especifico/" + idUsuarioCadastrado;
     }
@@ -73,7 +68,6 @@ public class UsuarioController {
         }
 
         Usuario usuarioEditado = usuarioService.editar(modeloCadastroUsuarioPerfil);
-
         attributes.addFlashAttribute("sucesso", "Funcionário editado com sucesso");
 
         if (usuarioEditado.getAtivo()) {
@@ -81,7 +75,6 @@ public class UsuarioController {
         } else {
             return "redirect:/usuarios/listar";
         }
-
     }
 
     @GetMapping("/preEditar/{id}")
@@ -93,11 +86,8 @@ public class UsuarioController {
 
     @GetMapping("/deletar/{id}")
     public String deletar(@PathVariable Integer id, RedirectAttributes attributes) {
-
         usuarioService.deletar(id);
-
         attributes.addFlashAttribute("sucesso", "Usuario deletado com sucesso.");
-
         return "redirect:/usuarios/listar";
     }
 
@@ -106,7 +96,7 @@ public class UsuarioController {
         if (Objects.isNull(modeloCadastroUsuarioPerfil.getPerfisUsuario())) {
             modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
         }
-        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(new Perfil());
+        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new Perfil());
         return "usuarios/cadastro";
     }
 
@@ -122,7 +112,7 @@ public class UsuarioController {
         if (Objects.isNull(modeloCadastroUsuarioPerfil.getPerfisUsuario())) {
             modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
         }
-        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(new Perfil());
+        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new Perfil());
         return "usuarios/edicao";
     }
 

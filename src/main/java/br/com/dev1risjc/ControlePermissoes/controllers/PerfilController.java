@@ -68,7 +68,6 @@ public class PerfilController {
         }
 
         int idPerfilCadastrado = perfilService.novoPerfil(modeloCadastroPerfilPermissao);
-
         attributes.addFlashAttribute("sucesso", "Perfil criado com sucesso");
         return "redirect:/perfis/listar-especifico/" + idPerfilCadastrado;
     }
@@ -80,7 +79,6 @@ public class PerfilController {
         }
 
         ModeloCadastroPerfilPermissao perfilPermissao = perfilService.editar(modeloCadastroPerfilPermissao);
-
         modelMap.addAttribute("sucesso", "Perfil salvo com sucesso");
         modelMap.addAttribute("perfilPermissao", perfilPermissao);
         return "perfis/lista-especifica";
@@ -91,7 +89,7 @@ public class PerfilController {
         if (Objects.isNull(modeloCadastroPerfilPermissao.getPermissoesPerfil())) {
             modeloCadastroPerfilPermissao.setPermissoesPerfil(new ArrayList<>());
         }
-        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(new Permissao());
+        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new Permissao());
         return "perfis/cadastro";
     }
 
@@ -107,7 +105,7 @@ public class PerfilController {
         if (Objects.isNull(modeloCadastroPerfilPermissao.getPermissoesPerfil())) {
             modeloCadastroPerfilPermissao.setPermissoesPerfil(new ArrayList<>());
         }
-        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(new Permissao());
+        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new Permissao());
         return "perfis/edicao";
     }
 
@@ -129,7 +127,6 @@ public class PerfilController {
     public String deletar(@PathVariable int id, RedirectAttributes attributes) {
         perfilService.deletar(id);
         attributes.addFlashAttribute("sucesso", "Perfil deletado com sucesso.");
-
         return "redirect:/perfis/listar";
     }
 

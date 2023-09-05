@@ -34,21 +34,11 @@ public class PermissaoService {
     }
 
     public Permissao preEditar(int id) {
-        Permissao permissaoBanco = permissaoRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(permissaoBanco)) {
-            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
-        }
-
-        return permissaoBanco;
+        return permissaoRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados"));
     }
 
     public void deletar(int id) {
-        Permissao permissaoDelete = permissaoRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(permissaoDelete)) {
-            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
-        }
+        Permissao permissaoDelete = permissaoRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados"));
 
         List<PerfilPermissao> usosPermissao = perfilPermissaoRepository.findByPermissao(permissaoDelete);
         if (!usosPermissao.isEmpty()) {
@@ -70,11 +60,7 @@ public class PermissaoService {
     }
 
     public void editar(Permissao permissao) {
-        Permissao permissaoBanco = permissaoRepository.findById(permissao.getId()).orElse(null);
-
-        if (Objects.isNull(permissaoBanco)) {
-            throw new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados");
-        }
+        permissaoRepository.findById(permissao.getId()).orElseThrow(() -> new ElementoNaoEncontradoException("Permissão não encontrada no banco de dados"));
 
         if (Objects.isNull(ultimoId)) {
             List<Permissao> permissoes = (List<Permissao>) permissaoRepository.findAll();
@@ -82,8 +68,6 @@ public class PermissaoService {
             ultimoId = permissoes.get(permissoes.size() - 1).getId();
         }
 
-        ultimoId++;
-        permissao.setId(ultimoId);
         permissaoRepository.save(permissao);
     }
 

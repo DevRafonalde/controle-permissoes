@@ -8,8 +8,9 @@
 	        <div class="container text-center">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-between">
 					<a class="btn btn-primary" role="button" th:href="@{/perfis/preEditar/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Editar Perfil</a>
-					<a class="btn btn-primary" role="button" th:href="@{/perfis/listar-especifico/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Listar por Permissões</a>
 					<a class="btn btn-primary" role="button" th:href="@{/perfis/clonar/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Clonar Perfil</a>
+					<a class="btn btn-primary" role="button" th:href="@{/perfis/listar-especifico/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Listar por Permissões</a>
+					<a class="btn btn-primary" role="button" th:href="@{/perfis/vincular-usuarios-em-lote/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" th:object="${modeloCadastroPerfilUsuario}">Vincular Usuários em lote</a>
 				</div>
 				<br>
 				<div th:replace="~{fragments/alert}"></div>

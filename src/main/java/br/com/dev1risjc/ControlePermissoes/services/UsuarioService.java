@@ -11,10 +11,6 @@ import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepo
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -53,11 +49,7 @@ public class UsuarioService {
     }
 
     public ModeloCadastroUsuarioPerfil listarEspecifico(Integer id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(usuario)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
 
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = new ModeloCadastroUsuarioPerfil();
         modeloCadastroUsuarioPerfil.setUsuario(usuario);
@@ -79,11 +71,7 @@ public class UsuarioService {
     }
 
     public ModeloCadastroUsuarioPerfil preEditar(Integer id) {
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(usuarioBanco)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
 
         List<Perfil> perfisUsuario = usuarioPerfilRepository.findByUsuario(usuarioBanco).stream()
                 .map(UsuarioPerfil::getPerfil)
@@ -97,11 +85,7 @@ public class UsuarioService {
     }
 
     public void deletar(Integer id) {
-        Usuario usuarioDelete = usuarioRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(usuarioDelete)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
+        Usuario usuarioDelete = usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
 
         List<UsuarioPerfil> vinculosUsuario = usuarioPerfilRepository.findByUsuario(usuarioDelete);
         if (!vinculosUsuario.isEmpty()) {
@@ -156,11 +140,7 @@ public class UsuarioService {
     public Usuario editar(ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil) {
         Usuario usuarioMexido = modeloCadastroUsuarioPerfil.getUsuario();
 
-        Usuario usuarioBanco = usuarioRepository.findById(usuarioMexido.getId()).orElse(null);
-
-        if (Objects.isNull(usuarioBanco)) {
-            throw new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados");
-        }
+        Usuario usuarioBanco = usuarioRepository.findById(usuarioMexido.getId()).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
 
         if (!usuarioMexido.getNomeUser().equalsIgnoreCase(usuarioBanco.getNomeUser())){
             Usuario usuarioExistente = usuarioRepository.findByNomeUser(usuarioMexido.getNomeUser());

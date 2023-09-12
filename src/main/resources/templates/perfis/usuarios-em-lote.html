@@ -11,36 +11,22 @@
 				<div th:replace="~{fragments/alert}"></div>
 				<br>
 				<h1 class="display-4 text-center" th:text="${modeloCadastroPerfilUsuario.perfil.nome}" th:object="${modeloCadastroPerfilUsuario}">Nome Perfil</h1>
-	            <form th:action="@{/perfis/vincular-usuarios-em-lote}" th:object="${modeloCadastroPerfilUsuario}" method="POST">
-	                <div class="row">
-						<table class="table table-striped">
-							<thead class="thead-light">
-							<tr>
-								<th scope="col">#</th>
-								<th scope="col">Usuário</th>
-								<th scope="col">
-									<button class="btn btn-success" type="submit" name="addUsuario">Adicionar Usuário</button>
-								</th>
-							</tr>
-							</thead>
-							<tbody>
-							<tr th:each="usuario,contagem : *{usuariosPerfil}">
-								<th scope="row" th:text="${contagem.count}">1</th>
-								<td>
-									<select th:field="*{usuariosPerfil[__${contagem.index}__]}" class="form-select">
-										<option selected value="">Selecione...</option>
-										<option th:each="u : ${usuarios}" th:value="${u.id}" th:text="${u.nomeUser}"></option>
-									</select>
-								</td>
-								<td>
-									<button class="btn btn-danger" type="submit" name="removeUsuario" th:value="${contagem.index}">Remover Usuário</button>
-								</td>
-							</tr>
-							</tbody>
-						</table>
+<!--	            <form th:action="@{/perfis/vincular-usuarios-em-lote}" th:object="${modeloCadastroPerfilUsuario}" method="POST">-->
+				<form id="form-vinculo-usuarioperfil" th:object="${modeloCadastroPerfilUsuario}">
+	                <div class="row checks-usuarios">
+						<div class="col">
+							<ul id="coluna-1" class="ul-check-usuarios">
+
+							</ul>
+						</div>
+						<div class="col">
+							<ul id="coluna-2" class="ul-check-usuarios">
+
+							</ul>
+						</div>
 	                </div>
 					<hr class="my-1" style="opacity: 0;">
-					<input type="hidden" id="perfil.id" th:field="*{perfil.id}">
+					<input type="hidden" id="perfil-id" th:field="*{perfil.id}">
 					<div class="d-grid gap-2">
 						<button type="submit" class="btn btn-primary">Salvar</button>
 						<a class="btn btn-secondary" th:href="@{/perfis/listar-especifico/{id} (id=${modeloCadastroPerfilUsuario.perfil.id})}" role="button">Voltar</a>

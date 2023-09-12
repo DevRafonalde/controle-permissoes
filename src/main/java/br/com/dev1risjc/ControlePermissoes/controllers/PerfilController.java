@@ -6,9 +6,12 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuarioId;
 import br.com.dev1risjc.ControlePermissoes.services.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -83,6 +86,21 @@ public class PerfilController {
         return "redirect:/perfis/listar";
     }
 
+    @GetMapping("/get-usuarios")
+    public ResponseEntity<List<Usuario>> getUsuarios() {
+        return new ResponseEntity<>(perfilService.getUsuarios(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-usuarios-vinculados/{id}")
+    public ResponseEntity<List<Integer>> getUsuariosVinculados(@PathVariable int id) {
+        List<Integer> usuariosVinculadosIds = perfilService.listarUsuariosVinculados(id)
+                .getUsuariosPerfil()
+                .stream()
+                .map(Usuario::getId)
+                .toList();
+        return new ResponseEntity<>(usuariosVinculadosIds, HttpStatus.OK);
+    }
+
     @PostMapping("/novo-perfil")
     public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
@@ -106,11 +124,12 @@ public class PerfilController {
         return "perfis/lista-especifica";
     }
 
+    // Esse método é utilizado via Javascript na página "perfis/usuarios-em-lote" ao invés do próprio Thymeleaf
     @PostMapping("/vincular-usuarios-em-lote")
-    public String vincularUsuariosEmLotePost(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, RedirectAttributes attributes) {
-        ModeloCadastroPerfilUsuario modeloRetorno = perfilService.vincularUsuariosEmLote(modeloCadastroPerfilUsuario);
+    public ResponseEntity<Integer> vincularUsuariosEmLotePost(@RequestBody ModeloCadastroPerfilUsuarioId modeloCadastroPerfilUsuarioId, RedirectAttributes attributes) {
+        ModeloCadastroPerfilUsuarioId modeloRetorno = perfilService.vincularUsuariosEmLote(modeloCadastroPerfilUsuarioId);
         attributes.addFlashAttribute("sucesso", "Usuários vinculados com sucesso");
-        return "redirect:/perfis/listar-usuarios-vinculados/" + modeloRetorno.getPerfil().getId();
+        return new ResponseEntity<>(modeloRetorno.getPerfil().getId(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/novo-perfil", params={"addPermissao"})
@@ -145,22 +164,6 @@ public class PerfilController {
         return "perfis/edicao";
     }
 
-    @RequestMapping(value="/vincular-usuarios-em-lote", params={"addUsuario"})
-    public String addRowVinculoUsuario(final ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, final BindingResult bindingResult) {
-        if (Objects.isNull(modeloCadastroPerfilUsuario.getUsuariosPerfil())) {
-            modeloCadastroPerfilUsuario.setUsuariosPerfil(new ArrayList<>());
-        }
-        modeloCadastroPerfilUsuario.getUsuariosPerfil().add(0, new Usuario());
-        return "perfis/usuarios-em-lote";
-    }
-
-    @RequestMapping(value="/vincular-usuarios-em-lote", params={"removeUsuario"})
-    public String removeRowVinculoUsuario(final ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario, final BindingResult bindingResult, final HttpServletRequest req) {
-        final Integer usuarioPerfilId = Integer.valueOf(req.getParameter("removeUsuario"));
-        modeloCadastroPerfilUsuario.getUsuariosPerfil().remove(usuarioPerfilId.intValue());
-        return "perfis/usuarios-em-lote";
-    }
-
     @ModelAttribute("permissoes")
     public List<Permissao> getPermissoes() {
         return perfilService.getPermissoes();
@@ -169,11 +172,6 @@ public class PerfilController {
     @ModelAttribute("sistemas")
     public List<Sistema> getSistemas() {
         return perfilService.getSistemas();
-    }
-
-    @ModelAttribute("usuarios")
-    public List<Usuario> getUsuarios() {
-        return perfilService.getUsuarios();
     }
 
 }

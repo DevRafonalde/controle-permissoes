@@ -16,3 +16,20 @@ body {
     min-height: 100vh;
     min-height: -webkit-fill-available;
 }
+
+.checks-usuarios {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+}
+
+
+.ul-check-usuarios {
+    list-style: none;
+    padding: 0;
+    padding-left: 25%;
+}
+
+li {
+    margin-bottom: 10px;
+}

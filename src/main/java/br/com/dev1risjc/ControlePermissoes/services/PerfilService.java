@@ -4,12 +4,14 @@ import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoExcep
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuarioId;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -45,14 +47,18 @@ public class PerfilService {
 
         ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario = new ModeloCadastroPerfilUsuario();
         modeloCadastroPerfilUsuario.setPerfil(perfil);
-        List<Usuario> permissoes = usuarioPerfilRepository.findByPerfil(perfil).stream()
+        List<Usuario> usuarios = usuarioPerfilRepository.findByPerfil(perfil).stream()
                 .map(UsuarioPerfil::getUsuario)
                 .filter(Objects::nonNull)
                 .filter(Usuario::getAtivo)
                 .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
                 .toList();
 
-        modeloCadastroPerfilUsuario.setUsuariosPerfil(permissoes);
+        if (usuarios.isEmpty()) {
+            modeloCadastroPerfilUsuario.setUsuariosPerfil(new ArrayList<>());
+        } else {
+            modeloCadastroPerfilUsuario.setUsuariosPerfil(usuarios);
+        }
 
         return modeloCadastroPerfilUsuario;
     }
@@ -141,7 +147,6 @@ public class PerfilService {
 
         setClonar(null);
         return perfilNovo.getId();
-
     }
 
     public ModeloCadastroPerfilPermissao editar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao) {
@@ -173,9 +178,10 @@ public class PerfilService {
         return modeloRetorno;
     }
 
-    public ModeloCadastroPerfilUsuario vincularUsuariosEmLote(ModeloCadastroPerfilUsuario modeloCadastroPerfilUsuario) {
-        Perfil perfilRecebido = modeloCadastroPerfilUsuario.getPerfil();
-        List<Usuario> usuarios = modeloCadastroPerfilUsuario.getUsuariosPerfil();
+    public ModeloCadastroPerfilUsuarioId vincularUsuariosEmLote(ModeloCadastroPerfilUsuarioId modeloCadastroPerfilUsuarioId) {
+        Perfil perfilRecebido = modeloCadastroPerfilUsuarioId.getPerfil();
+        List<Integer> usuariosId = modeloCadastroPerfilUsuarioId.getUsuariosPerfilId();
+        List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAllById(usuariosId);
 
         List<UsuarioPerfil> registrosExistentes = usuarioPerfilRepository.findByPerfil(perfilRecebido);
         usuarioPerfilRepository.deleteAll(registrosExistentes);
@@ -188,7 +194,7 @@ public class PerfilService {
             usuarioPerfilRepository.save(usuarioPerfil);
         }
 
-        return modeloCadastroPerfilUsuario;
+        return modeloCadastroPerfilUsuarioId;
     }
 
     public List<Permissao> getPermissoes() {
@@ -207,7 +213,7 @@ public class PerfilService {
         List<Usuario> usuariosBanco = (List<Usuario>) usuarioRepository.findAll();
         return usuariosBanco.stream()
                 .filter(usuario -> Objects.nonNull(usuario.getNomeAmigavel()) && usuario.getAtivo())
-                .sorted(Comparator.comparing(Usuario::getNomeAmigavel))
+                .sorted(Comparator.comparing(usuario -> usuario.getNomeUser().toLowerCase()))
                 .toList();
     }
 }

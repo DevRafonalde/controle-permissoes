@@ -52,6 +52,7 @@ public class UsuarioController {
 
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable Integer id, ModelMap modelMap) {
+        //TODO Arrumar a listagem das permissões. Ver de fazer no msm esquema do vínculo de usuários em lote nos perfis
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = usuarioService.preEditar(id);
         modelMap.addAttribute("modeloCadastroUsuarioPerfil", modeloCadastroUsuarioPerfil);
         return "usuarios/edicao";

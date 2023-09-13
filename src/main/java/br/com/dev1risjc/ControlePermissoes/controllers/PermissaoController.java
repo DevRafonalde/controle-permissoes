@@ -22,7 +22,7 @@ public class PermissaoController {
     }
 
     @GetMapping("/cadastrar")
-    public String cadastrar(PermissaoDTO permissao) {
+    public String cadastrar(PermissaoDTO permissaoDTO) {
         return "permissoes/cadastro";
     }
 
@@ -35,7 +35,7 @@ public class PermissaoController {
 
     @GetMapping("/preEditar/{id}")
     public String preEditar(@PathVariable int id, ModelMap modelMap) {
-        modelMap.addAttribute("permissao", permissaoService.preEditar(id));
+        modelMap.addAttribute("permissaoDTO", permissaoService.preEditar(id));
         return "permissoes/edicao";
     }
 
@@ -47,24 +47,24 @@ public class PermissaoController {
     }
 
     @PostMapping("/nova-permissao")
-    public String novaPermissao(@Valid PermissaoDTO permissao, BindingResult result, RedirectAttributes attributes) {
+    public String novaPermissao(@Valid PermissaoDTO permissaoDTO, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "permissoes/cadastro";
         }
 
-        permissaoService.novaPermissao(permissao);
+        permissaoService.novaPermissao(permissaoDTO);
 
         attributes.addFlashAttribute("sucesso", "Permissao criada com sucesso.");
         return "redirect:/permissoes/listar";
     }
 
     @PostMapping("/editar")
-    public String editar(@Valid PermissaoDTO permissao, BindingResult result, RedirectAttributes attributes) {
+    public String editar(@Valid PermissaoDTO permissaoDTO, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "permissoes/edicao";
         }
 
-        permissaoService.editar(permissao);
+        permissaoService.editar(permissaoDTO);
 
         attributes.addFlashAttribute("sucesso", "Permissao editada com sucesso.");
         return "redirect:/permissoes/listar";

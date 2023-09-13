@@ -27,7 +27,7 @@
 						<div class="col-md-6">
 							<label class="form-label" for="sistema">Sistema:</label>
 							<select id="sistema" class="form-select" th:field="*{perfil.sistema}" th:classappend="${#fields.hasErrors('perfil.sistema')} ? 'is-invalid'">
-								<option value="" selected disabled>Selecione...</option>
+								<option value="" selected>Selecione...</option>
 								<option th:each="s : ${sistemas}" th:value="${s.id}" th:text="${s.nome}">Sistemas</option>
 							</select>
 							<div class="invalid-feedback">

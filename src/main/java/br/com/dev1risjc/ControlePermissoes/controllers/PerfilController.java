@@ -1,9 +1,9 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PerfilDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PermissaoDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.SistemaDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuarioId;
@@ -39,7 +39,7 @@ public class PerfilController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Perfil> perfis = perfilService.listarTodos();
+        List<PerfilDTO> perfis = perfilService.listarTodos();
         modelMap.addAttribute("perfis", perfis);
         return "perfis/lista";
     }
@@ -87,7 +87,7 @@ public class PerfilController {
     }
 
     @GetMapping("/get-usuarios")
-    public ResponseEntity<List<Usuario>> getUsuarios() {
+    public ResponseEntity<List<UsuarioDTO>> getUsuarios() {
         return new ResponseEntity<>(perfilService.getUsuarios(), HttpStatus.OK);
     }
 
@@ -96,7 +96,7 @@ public class PerfilController {
         List<Integer> usuariosVinculadosIds = perfilService.listarUsuariosVinculados(id)
                 .getUsuariosPerfil()
                 .stream()
-                .map(Usuario::getId)
+                .map(UsuarioDTO::getId)
                 .toList();
         return new ResponseEntity<>(usuariosVinculadosIds, HttpStatus.OK);
     }
@@ -113,7 +113,7 @@ public class PerfilController {
     }
 
     @PostMapping("/editar")
-    public String editar(ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, ModelMap modelMap) {
+    public String editar(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, ModelMap modelMap) {
         if (result.hasErrors()) {
             return "perfis/edicao";
         }
@@ -137,7 +137,7 @@ public class PerfilController {
         if (Objects.isNull(modeloCadastroPerfilPermissao.getPermissoesPerfil())) {
             modeloCadastroPerfilPermissao.setPermissoesPerfil(new ArrayList<>());
         }
-        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new Permissao());
+        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new PermissaoDTO());
         return "perfis/cadastro";
     }
 
@@ -153,7 +153,7 @@ public class PerfilController {
         if (Objects.isNull(modeloCadastroPerfilPermissao.getPermissoesPerfil())) {
             modeloCadastroPerfilPermissao.setPermissoesPerfil(new ArrayList<>());
         }
-        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new Permissao());
+        modeloCadastroPerfilPermissao.getPermissoesPerfil().add(0, new PermissaoDTO());
         return "perfis/edicao";
     }
 
@@ -165,12 +165,12 @@ public class PerfilController {
     }
 
     @ModelAttribute("permissoes")
-    public List<Permissao> getPermissoes() {
+    public List<PermissaoDTO> getPermissoes() {
         return perfilService.getPermissoes();
     }
 
     @ModelAttribute("sistemas")
-    public List<Sistema> getSistemas() {
+    public List<SistemaDTO> getSistemas() {
         return perfilService.getSistemas();
     }
 

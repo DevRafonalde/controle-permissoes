@@ -1,8 +1,8 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.UsuarioPerfil;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PerfilDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioPerfilDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class UsuarioController {
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Usuario> usuarios = usuarioService.listarTodos();
+        List<UsuarioDTO> usuarios = usuarioService.listarTodos();
         modelMap.addAttribute("usuarios", usuarios);
         return "usuarios/lista";
     }
@@ -60,7 +60,7 @@ public class UsuarioController {
     @GetMapping("/deletar/{id}")
     public String deletar(@PathVariable Integer id, RedirectAttributes attributes) {
         usuarioService.deletar(id);
-        attributes.addFlashAttribute("sucesso", "Usuario deletado com sucesso.");
+        attributes.addFlashAttribute("sucesso", "Usuário deletado com sucesso.");
         return "redirect:/usuarios/listar";
     }
 
@@ -71,7 +71,7 @@ public class UsuarioController {
         }
 
         int idUsuarioCadastrado = usuarioService.novoUsuario(modeloCadastroUsuarioPerfil);
-        attributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso");
+        attributes.addFlashAttribute("sucesso", "Usuário criado com sucesso");
         return "redirect:/usuarios/listar-especifico/" + idUsuarioCadastrado;
     }
 
@@ -81,8 +81,8 @@ public class UsuarioController {
             return "usuarios/edicao";
         }
 
-        Usuario usuarioEditado = usuarioService.editar(modeloCadastroUsuarioPerfil);
-        attributes.addFlashAttribute("sucesso", "Funcionário editado com sucesso");
+        UsuarioDTO usuarioEditado = usuarioService.editar(modeloCadastroUsuarioPerfil);
+        attributes.addFlashAttribute("sucesso", "Usuário editado com sucesso");
 
         if (usuarioEditado.getAtivo()) {
             return "redirect:/usuarios/listar-especifico/" + usuarioEditado.getId();
@@ -96,7 +96,7 @@ public class UsuarioController {
         if (Objects.isNull(modeloCadastroUsuarioPerfil.getPerfisUsuario())) {
             modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
         }
-        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new Perfil());
+        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new PerfilDTO());
         return "usuarios/cadastro";
     }
 
@@ -112,7 +112,7 @@ public class UsuarioController {
         if (Objects.isNull(modeloCadastroUsuarioPerfil.getPerfisUsuario())) {
             modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
         }
-        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new Perfil());
+        modeloCadastroUsuarioPerfil.getPerfisUsuario().add(0, new PerfilDTO());
         return "usuarios/edicao";
     }
 
@@ -124,7 +124,7 @@ public class UsuarioController {
     }
 
     @ModelAttribute("perfis")
-    public List<Perfil> getPerfis(UsuarioPerfil usuarioPerfil) {
+    public List<PerfilDTO> getPerfis(UsuarioPerfilDTO usuarioPerfil) {
         return usuarioService.getPerfis(usuarioPerfil);
     }
 }

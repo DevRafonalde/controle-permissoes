@@ -1,7 +1,7 @@
 package br.com.dev1risjc.ControlePermissoes.controllers;
 
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Permissao;
-import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Sistema;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PermissaoDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.SistemaDTO;
 import br.com.dev1risjc.ControlePermissoes.services.PermissaoService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -22,13 +22,13 @@ public class PermissaoController {
     }
 
     @GetMapping("/cadastrar")
-    public String cadastrar(Permissao permissao) {
+    public String cadastrar(PermissaoDTO permissao) {
         return "permissoes/cadastro";
     }
 
     @GetMapping("/listar")
     public String listar(ModelMap modelMap) {
-        List<Permissao> permissoes = permissaoService.listar();
+        List<PermissaoDTO> permissoes = permissaoService.listar();
         modelMap.addAttribute("permissoes", permissoes);
         return "permissoes/lista";
     }
@@ -47,7 +47,7 @@ public class PermissaoController {
     }
 
     @PostMapping("/nova-permissao")
-    public String novaPermissao(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
+    public String novaPermissao(@Valid PermissaoDTO permissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "permissoes/cadastro";
         }
@@ -59,7 +59,7 @@ public class PermissaoController {
     }
 
     @PostMapping("/editar")
-    public String editar(@Valid Permissao permissao, BindingResult result, RedirectAttributes attributes) {
+    public String editar(@Valid PermissaoDTO permissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             return "permissoes/edicao";
         }
@@ -71,12 +71,12 @@ public class PermissaoController {
     }
 
     @ModelAttribute("sistemas")
-    public List<Sistema> getSistemas() {
+    public List<SistemaDTO> getSistemas() {
         return permissaoService.getSistemas();
     }
 
     @ModelAttribute("listaPermissoesCadastro")
-    public List<Permissao> getPermissoesCadastro() {
+    public List<PermissaoDTO> getPermissoesCadastro() {
         return permissaoService.getPermissoesCadastro();
     }
 }

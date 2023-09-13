@@ -1,7 +1,6 @@
 package br.com.dev1risjc.ControlePermissoes.models.entities.orm;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -17,22 +16,18 @@ public class Usuario {
     @Getter @Setter
     private Integer id;
 
-    @NotBlank(message = "Insira o nome completo do usuário")
     @Column(name = "NomeCompleto")
     @Getter @Setter
     private String nomeCompleto;
 
-    @NotBlank(message = "Insira um nome amigável para o usuário")
     @Column(name = "NomeAmigavel")
     @Getter @Setter
     private String NomeAmigavel;
 
-    @NotBlank(message = "Insira o nome de usuário pelo qual o funcionário irá se logar")
     @Column(name = "NomeUser")
     @Getter @Setter
     private String nomeUser;
 
-    @NotBlank(message = "Insira uma senha")
     @Column(name = "SenhaUser")
     @Getter @Setter
     private String senhaUser;

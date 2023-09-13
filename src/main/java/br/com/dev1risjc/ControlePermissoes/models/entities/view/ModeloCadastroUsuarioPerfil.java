@@ -1,5 +1,7 @@
 package br.com.dev1risjc.ControlePermissoes.models.entities.view;
 
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PerfilDTO;
+import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import jakarta.validation.Valid;
@@ -11,9 +13,9 @@ import java.util.List;
 public class ModeloCadastroUsuarioPerfil {
     @Valid
     @Getter @Setter
-    private Usuario usuario;
+    private UsuarioDTO usuario;
 
     @Getter @Setter
-    private List<Perfil> perfisUsuario;
+    private List<PerfilDTO> perfisUsuario;
 
 }

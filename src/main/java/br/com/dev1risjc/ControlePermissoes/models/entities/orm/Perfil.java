@@ -1,8 +1,6 @@
 package br.com.dev1risjc.ControlePermissoes.models.entities.orm;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.Objects;
@@ -20,18 +18,15 @@ public class Perfil {
     @Getter @Setter
     private Integer id;
 
-    @NotNull(message = "Selecione o sistema relativo ao perfil")
     @ManyToOne
     @JoinColumn(name = "ID_Sistema")
     @Setter
     private Sistema sistema;
 
-    @NotBlank(message = "O nome do perfil é obrigatório")
     @Column(name = "Nome")
     @Getter @Setter
     private String Nome;
 
-    @NotBlank(message = "Insira uma breve descrição sobre o funcionamento do perfil")
     @Column(name = "Descricao")
     @Getter @Setter
     private String descricao;

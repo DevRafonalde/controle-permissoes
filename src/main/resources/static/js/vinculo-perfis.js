@@ -1,59 +1,17 @@
-setTraducaoDataTable('#table-permissoes')
-setTraducaoDataTable('#table-perfis')
-setTraducaoDataTable('#table-usuarios')
-
-function setTraducaoDataTable(id) {
-    $(id).DataTable({
-        "ordering": true,
-        "paging": true,
-        "searching": true,
-        "oLanguage": {
-            "sEmptyTable": "Nenhum registro encontrado na tabela",
-            "sInfo": "Mostrar _START_ até _END_ de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrar 0 até 0 de 0 Registros",
-            "sInfoFiltered": "(Filtrar de _MAX_ total registros)",
-            "sInfoPostFix": "",
-            "sInfoThousands": ".",
-            "sLengthMenu": "Mostrar _MENU_ registros por pagina",
-            "sLoadingRecords": "Carregando...",
-            "sProcessing": "Processando...",
-            "sZeroRecords": "Nenhum registro encontrado",
-            "sSearch": "Pesquisar",
-            "oPaginate": {
-                "sNext": "Proximo",
-                "sPrevious": "Anterior",
-                "sFirst": "Primeiro",
-                "sLast": "Ultimo"
-            },
-            "oAria": {
-                "sSortAscending": ": Ordenar colunas de forma ascendente",
-                "sSortDescending": ": Ordenar colunas de forma descendente"
-            }
-        }
-    });
-}
-
-var url = '';
-
-function deletePerfil(obj) {
-    url = "http://localhost:8603/" + $(obj).attr('id').split("_")[1];
-}
-
-$('#confirmarExclusao').click(function() {
-    document.location.href = url;
-});
-
-$(".check-exibicao").on("click", function(event) {
-    event.preventDefault();
-});
-
 $(document).ready(function () {
-    if(window.location.href.includes("vincular-usuarios-em-lote")) {
+    if(window.location.href.includes("usuarios/cadastrar") || window.location.href.includes("usuarios/clonar") || window.location.href.includes("usuarios/preEditar")) {
+
+        var usuarioId = $('#usuario-id').val();
+        if(window.location.href.includes("clonar")) {
+            const arrayUrl = window.location.href.split("/");
+            usuarioId = arrayUrl[arrayUrl.length - 1];
+        }
         $.ajax({
             type: "GET",
-            url: '/perfis/get-usuarios',
+            url: '/usuarios/get-todos-perfis',
             contentType: "application/json",
             success: function (data) {
+                console.log(data);
                 // Divida a lista ao meio
                 const middleIndex = Math.ceil(data.length / 2);
                 const coluna1 = data.slice(0, middleIndex);
@@ -63,20 +21,19 @@ $(document).ready(function () {
                 const coluna1Element = $('#coluna-1');
                 const coluna2Element = $('#coluna-2');
 
-                coluna1.forEach(function (usuario) {
-                    const li = $('<li>').html(`<input type="checkbox" class="form-check-input check-vinculo-usuario-perfil" id="${usuario.id}" value="${usuario.id}"/> <label class="form-check-label" for="${usuario.id}">${usuario.nomeUser}</label>`);
+                coluna1.forEach(function (perfil) {
+                    const li = $('<li>').html(`<input type="checkbox" class="form-check-input check-vinculo-usuario-perfil" id="${perfil.id}" value="${perfil.id}"/> <label class="form-check-label" for="${perfil.id}">${perfil.nome}</label>`);
                     coluna1Element.append(li);
                 });
 
-                coluna2.forEach(function (usuario) {
-                    const li = $('<li>').html(`<input type="checkbox" class="form-check-input check-vinculo-usuario-perfil" id="${usuario.id}" value="${usuario.id}"/> <label class="form-check-label" for="${usuario.id}">${usuario.nomeUser}</label>`);
+                coluna2.forEach(function (perfil) {
+                    const li = $('<li>').html(`<input type="checkbox" class="form-check-input check-vinculo-usuario-perfil" id="${perfil.id}" value="${perfil.id}"/> <label class="form-check-label" for="${perfil.id}">${perfil.nome}</label>`);
                     coluna2Element.append(li);
                 });
 
-                var perfilId = $('#perfil-id').val()
                 $.ajax({
                     type: "GET",
-                    url: "/perfis/get-usuarios-vinculados/" + perfilId,
+                    url: "/usuarios/get-perfis-vinculados/" + usuarioId,
                     success: function (response) {
                         var usuariosVinculados = response;
                         var listaUsuariosCheck = document.getElementsByClassName("check-vinculo-usuario-perfil");

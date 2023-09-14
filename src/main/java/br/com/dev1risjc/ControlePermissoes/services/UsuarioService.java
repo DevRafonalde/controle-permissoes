@@ -8,14 +8,17 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioPerfilDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.UsuarioPerfil;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +69,11 @@ public class UsuarioService {
                 .map(perfil -> mapper.map(perfil, PerfilDTO.class))
                 .toList();
 
-        modeloCadastroUsuarioPerfil.setPerfisUsuario(perfis);
+        if (perfis.isEmpty()) {
+            modeloCadastroUsuarioPerfil.setPerfisUsuario(new ArrayList<>());
+        } else {
+            modeloCadastroUsuarioPerfil.setPerfisUsuario(perfis);
+        }
 
         return modeloCadastroUsuarioPerfil;
     }
@@ -184,20 +191,33 @@ public class UsuarioService {
         return mapper.map(usuarioSalvo, UsuarioDTO.class);
     }
 
-    public List<PerfilDTO> getPerfis(UsuarioPerfilDTO usuarioPerfil) {
-        if (Objects.nonNull(usuarioPerfil.getId())){
-            Usuario usuario = usuarioRepository.findById(usuarioPerfil.getId()).orElse(null);
-            List<Integer> idsPerfis = usuarioPerfilRepository.findByUsuario(usuario).stream().filter(u -> Objects.nonNull(u.getPerfil())).map(u -> u.getPerfil().getId()).toList();
-            List<Perfil> perfis = (List<Perfil>) perfilRepository.findAllById(idsPerfis);
-            return perfis.stream()
-                    .sorted(Comparator.comparing(perfil -> perfil.getSistema().getNome()))
-                    .map(perfil -> mapper.map(perfil, PerfilDTO.class))
-                    .toList();
-        }
+    public List<PerfilDTO> getPerfis() {
+//        if (Objects.nonNull(usuarioPerfil.getId())){
+//            Usuario usuario = usuarioRepository.findById(usuarioPerfil.getId()).orElse(null);
+//            List<Integer> idsPerfis = usuarioPerfilRepository.findByUsuario(usuario).stream().filter(u -> Objects.nonNull(u.getPerfil())).map(u -> u.getPerfil().getId()).toList();
+//            List<Perfil> perfis = (List<Perfil>) perfilRepository.findAllById(idsPerfis);
+//            return perfis.stream()
+//                    .sorted(Comparator.comparing(perfil -> perfil.getSistema().getNome()))
+//                    .map(perfil -> mapper.map(perfil, PerfilDTO.class))
+//                    .toList();
+//        }
         List<Perfil> todosPerfis = (List<Perfil>) perfilRepository.findAll();
         return todosPerfis.stream()
                 .sorted(Comparator.comparing(Perfil::getNome))
                 .map(perfil -> mapper.map(perfil, PerfilDTO.class))
+                .toList();
+    }
+
+    public List<Integer> getPerfisVinculadosId(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
+        UsuarioDTO usuarioDTO = mapper.map(usuario, UsuarioDTO.class);
+
+        ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = listarEspecifico(id);
+
+
+        return modeloCadastroUsuarioPerfil.getPerfisUsuario()
+                .stream()
+                .map(PerfilDTO::getId)
                 .toList();
     }
 }

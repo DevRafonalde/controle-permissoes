@@ -23,8 +23,14 @@ body {
     border: 1px solid #ccc;
 }
 
+.checks-cadastro-vinculos {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+}
 
-.ul-check-usuarios {
+
+.ul-check-vinculos {
     list-style: none;
     padding: 0;
     padding-left: 25%;

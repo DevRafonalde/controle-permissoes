@@ -52,34 +52,48 @@
 								<span th:errors="*{usuario.caixaVirtual}"></span>
 							</div>
 						</div>
-						<table class="table table-striped">
-							<thead class="thead-light">
-							<tr>
-								<th scope="col">#</th>
-								<th scope="col">Perfil</th>
-								<th scope="col">
-									<button type="submit" name="addPerfil" class="btn btn-success">Adicionar Perfil</button>
-								</th>
-							</tr>
-							</thead>
-							<tbody>
-							<tr th:each="perfil,contagem : *{perfisUsuario}">
-								<th scope="row" th:text="${contagem.count}">1</th>
-								<td>
-									<select th:field="*{perfisUsuario[__${contagem.index}__]}" class="form-select">
-										<option disabled value="">Selecione...</option>
-										<option th:each="p : ${perfis}" th:value="${p.id}" th:text="${p.Nome}"></option>
-									</select>
-								</td>
-								<td>
-									<button type="submit" name="removePerfil" th:value="${contagem.index}" class="btn btn-danger">Remover Perfil</button>
-								</td>
-							</tr>
-							</tbody>
-						</table>
+						<div class="col">
+							<div class="row checks-cadastro-vinculos">
+								<div class="col">
+									<ul id="coluna-1" class="ul-check-vinculos">
+
+									</ul>
+								</div>
+								<div class="col">
+									<ul id="coluna-2" class="ul-check-vinculos">
+
+									</ul>
+								</div>
+							</div>
+						</div>
+<!--						<table class="table table-striped">-->
+<!--							<thead class="thead-light">-->
+<!--							<tr>-->
+<!--								<th scope="col">#</th>-->
+<!--								<th scope="col">Perfil</th>-->
+<!--								<th scope="col">-->
+<!--									<button type="submit" name="addPerfil" class="btn btn-success">Adicionar Perfil</button>-->
+<!--								</th>-->
+<!--							</tr>-->
+<!--							</thead>-->
+<!--							<tbody>-->
+<!--							<tr th:each="perfil,contagem : *{perfisUsuario}">-->
+<!--								<th scope="row" th:text="${contagem.count}">1</th>-->
+<!--								<td>-->
+<!--									<select th:id="*{perfisUsuario[__${contagem.index}__]}" th:name="*{perfisUsuario[__${contagem.index}__]}" class="form-select">-->
+<!--										<option disabled value="">Selecione...</option>-->
+<!--										<option th:each="p : ${todosPerfis}" th:value="${p.id}" th:text="${p.Nome}" th:selected="${p.id} == ${perfil.id}"></option>-->
+<!--									</select>-->
+<!--								</td>-->
+<!--								<td>-->
+<!--									<button type="submit" name="removePerfil" th:value="${contagem.index}" class="btn btn-danger">Remover Perfil</button>-->
+<!--								</td>-->
+<!--							</tr>-->
+<!--							</tbody>-->
+<!--						</table>-->
 	                </div>
 					<hr class="my-1" style="opacity: 0;">
-					<input type="hidden" id="usuario.id" th:field="*{usuario.id}">
+					<input type="hidden" id="usuario-id" th:field="*{usuario.id}">
 					<div class="d-grid gap-2">
 						<button type="submit" class="btn btn-primary">Alterar</button>
 						<a class="btn btn-secondary" th:href="@{/usuarios/listar}" role="button">Voltar</a>

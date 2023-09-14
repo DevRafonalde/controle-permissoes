@@ -8,6 +8,8 @@ import br.com.dev1risjc.ControlePermissoes.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -63,6 +65,16 @@ public class UsuarioController {
         usuarioService.deletar(id);
         attributes.addFlashAttribute("sucesso", "Usuário deletado com sucesso.");
         return "redirect:/usuarios/listar";
+    }
+
+    @GetMapping("/get-todos-perfis")
+    public ResponseEntity<List<PerfilDTO>> getPerfis() {
+        return new ResponseEntity<>(usuarioService.getPerfis(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-perfis-vinculados/{id}")
+    public ResponseEntity<List<Integer>> getPerfisVinculados(@PathVariable Integer id) {
+        return new ResponseEntity<>(usuarioService.getPerfisVinculadosId(id), HttpStatus.OK);
     }
 
     @PostMapping("/novo-usuario")
@@ -122,10 +134,5 @@ public class UsuarioController {
         final Integer perfilUsuarioId = Integer.valueOf(req.getParameter("removePerfil"));
         modeloCadastroUsuarioPerfil.getPerfisUsuario().remove(perfilUsuarioId.intValue());
         return "usuarios/edicao";
-    }
-
-    @ModelAttribute("perfis")
-    public List<PerfilDTO> getPerfis(UsuarioPerfilDTO usuarioPerfil) {
-        return usuarioService.getPerfis(usuarioPerfil);
     }
 }

@@ -7,9 +7,11 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 public class ModeloCadastroUsuarioPerfil {
     @Valid
     @Getter @Setter

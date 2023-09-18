@@ -1,11 +1,15 @@
+// TODO Fazer o submit correto das informações baseado nos diferentes formulários
 $(document).ready(function () {
-    if(window.location.href.includes("usuarios/cadastrar") || window.location.href.includes("usuarios/clonar") || window.location.href.includes("usuarios/preEditar")) {
+    const urlAtual = window.location.href;
+    if (urlAtual.includes("usuarios/cadastrar") || urlAtual.includes("usuarios/clonar") || urlAtual.includes("usuarios/preEditar")) {
 
         var usuarioId = $('#usuario-id').val();
-        if(window.location.href.includes("clonar")) {
-            const arrayUrl = window.location.href.split("/");
+        if (urlAtual.includes("clonar")) {
+            const arrayUrl = urlAtual.split("/");
             usuarioId = arrayUrl[arrayUrl.length - 1];
         }
+
+        // Requisição padrão para toda página de usuários com CheckBox
         $.ajax({
             type: "GET",
             url: '/usuarios/get-todos-perfis',
@@ -53,38 +57,22 @@ $(document).ready(function () {
             }
         });
 
-        var listaUsuariosSelecionados = [];
-        $('#form-vinculo-usuarioperfil').submit(function (event) {
+        var listaPerfisSelecionados = [];
+
+        // Formulário de cadastro
+        $('#form-usuario').submit(function (event) {
             event.preventDefault();
 
-            var listaUsuariosCheck = document.getElementsByClassName("check-vinculo-usuario-perfil");
-            for (var i = 0; i < listaUsuariosCheck.length; i++) {
-                if (listaUsuariosCheck[i].checked) {
-                    listaUsuariosSelecionados.push(listaUsuariosCheck[i].value);
+            var listaPerfisCheck = document.getElementsByClassName("check-vinculo-usuario-perfil");
+            for (var i = 0; i < listaPerfisCheck.length; i++) {
+                if (listaPerfisCheck[i].checked) {
+                    listaPerfisSelecionados.push(listaPerfisCheck[i].value);
                 }
             }
 
-            var modeloCadastroPerfilUsuarioId = {
-                perfil: {
-                    id: $('#perfil-id').val()
-                },
-                usuariosPerfilId: listaUsuariosSelecionados
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:8603/perfis/vincular-usuarios-em-lote",
-                data: JSON.stringify(modeloCadastroPerfilUsuarioId),
-                contentType: "application/json",
-                success: function (response) {
-                    console.log("Requisição bem sucedida: ", response);
-                    window.location.replace("http://localhost:8603/perfis/listar-usuarios-vinculados/" + response);
-                },
-                error: function (error) {
-                    console.log(JSON.stringify(modeloCadastroPerfilUsuarioId));
-                    console.log("Erro na requisição: ", error);
-                }
-            });
+            document.getElementById("perfisUsuario").value = listaPerfisSelecionados;
+            listaPerfisSelecionados = [];
+            document.getElementById("form-usuario").submit();
         });
     }
 });

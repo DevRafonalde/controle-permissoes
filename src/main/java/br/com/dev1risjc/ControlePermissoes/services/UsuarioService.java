@@ -4,17 +4,14 @@ import br.com.dev1risjc.ControlePermissoes.exceptions.AtributoJaUtilizadoExcepti
 import br.com.dev1risjc.ControlePermissoes.exceptions.ElementoNaoEncontradoException;
 import br.com.dev1risjc.ControlePermissoes.models.entities.dto.PerfilDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioDTO;
-import br.com.dev1risjc.ControlePermissoes.models.entities.dto.UsuarioPerfilDTO;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Perfil;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.Usuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.orm.UsuarioPerfil;
-import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.PerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioPerfilRepository;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.UsuarioRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

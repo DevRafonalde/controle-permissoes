@@ -8,46 +8,47 @@
 	        <div class="container" id="cadastro">
 				<h1 class="display-4">Edição de Usuário</h1>
 				<div th:replace="~{fragments/alert}"></div>
-	            <form th:action="@{/usuarios/editar}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">
+<!--	            <form th:action="@{/usuarios/editar}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">-->
+				<form id="form-edicao-usuario" th:object="${modeloCadastroUsuarioPerfil}">
 	                <div class="row">
 	                    <div class="col-md-6">
-	                        <label for="usuario.nomeCompleto">Nome Completo:</label>
-	                        <input type="text" class="form-control" id="usuario.nomeCompleto" placeholder="Nome Completo" autofocus="autofocus" th:field="*{usuario.nomeCompleto}" th:classappend="${#fields.hasErrors('usuario.nomeCompleto')} ? 'is-invalid'"/>
+	                        <label for="usuario-nomeCompleto">Nome Completo:</label>
+	                        <input type="text" class="form-control" id="usuario-nomeCompleto" placeholder="Nome Completo" autofocus="autofocus" th:field="*{usuario.nomeCompleto}" th:classappend="${#fields.hasErrors('usuario.nomeCompleto')} ? 'is-invalid'"/>
 	                        <div class="invalid-feedback">
 								<span th:errors="*{usuario.nomeCompleto}"></span>
 	                        </div>
 	                    </div>
 	                    <div class="col-md-6">
-	                        <label for="usuario.NomeAmigavel">Nome Amigável:</label>
-	                        <input type="text" class="form-control" id="usuario.NomeAmigavel" placeholder="Nome Amigável" th:field="*{usuario.NomeAmigavel}" th:classappend="${#fields.hasErrors('usuario.NomeAmigavel')} ? 'is-invalid'"/>
+	                        <label for="usuario-NomeAmigavel">Nome Amigável:</label>
+	                        <input type="text" class="form-control" id="usuario-NomeAmigavel" placeholder="Nome Amigável" th:field="*{usuario.NomeAmigavel}" th:classappend="${#fields.hasErrors('usuario.NomeAmigavel')} ? 'is-invalid'"/>
 	                        <div class="invalid-feedback">
 								<span th:errors="*{usuario.NomeAmigavel}"></span>
 	                        </div>
 	                    </div>
 						<div class="col-md-6">
-							<label for="usuario.nomeUser">Nome de Usuário:</label>
-							<input type="text" class="form-control" id="usuario.nomeUser" placeholder="Nome Usuário" autofocus="autofocus" th:field="*{usuario.nomeUser}" th:classappend="${#fields.hasErrors('usuario.nomeUser')} ? 'is-invalid'"/>
+							<label for="usuario-nomeUser">Nome de Usuário:</label>
+							<input type="text" class="form-control" id="usuario-nomeUser" placeholder="Nome Usuário" autofocus="autofocus" th:field="*{usuario.nomeUser}" th:classappend="${#fields.hasErrors('usuario.nomeUser')} ? 'is-invalid'"/>
 							<div class="invalid-feedback">
 								<span th:errors="*{usuario.nomeUser}"></span>
 							</div>
 						</div>
 						<div class="col-md-6">
-							<label for="usuario.observacao">Observação:</label>
-							<input type="text" class="form-control" id="usuario.observacao" placeholder="Observação" th:field="*{usuario.observacao}" th:classappend="${#fields.hasErrors('usuario.observacao')} ? 'is-invalid'"/>
+							<label for="usuario-observacao">Observação:</label>
+							<input type="text" class="form-control" id="usuario-observacao" placeholder="Observação" th:field="*{usuario.observacao}" th:classappend="${#fields.hasErrors('usuario.observacao')} ? 'is-invalid'"/>
 							<div class="invalid-feedback">
 								<span th:errors="*{usuario.observacao}"></span>
 							</div>
 						</div>
 	                    <div class="col-md-6" style="margin-top: 2.5%;">
-	                        <label class="form-check-label" for="usuario.caixaVirtual">Caixa Virtual</label>
-	                        <input type="checkbox" class="form-check-input" id="usuario.caixaVirtual" th:field="*{usuario.caixaVirtual}" th:classappend="${#fields.hasErrors('usuario.caixaVirtual')} ? 'is-invalid'"/>
+	                        <label class="form-check-label" for="usuario-caixaVirtual">Caixa Virtual</label>
+	                        <input type="checkbox" class="form-check-input" id="usuario-caixaVirtual" th:field="*{usuario.caixaVirtual}" th:classappend="${#fields.hasErrors('usuario.caixaVirtual')} ? 'is-invalid'"/>
 	                        <div class="invalid-feedback">
 								<span th:errors="*{usuario.caixaVirtual}"></span>
 	                        </div>
 	                    </div>
 						<div class="col-md-6" style="margin-top: 2.5%;">
-							<label class="form-check-label" for="usuario.ativo">Ativo</label>
-							<input type="checkbox" class="form-check-input" id="usuario.ativo" th:field="*{usuario.ativo}" th:classappend="${#fields.hasErrors('usuario.ativo')} ? 'is-invalid'"/>
+							<label class="form-check-label" for="usuario-ativo">Ativo</label>
+							<input type="checkbox" class="form-check-input" id="usuario-ativo" th:field="*{usuario.ativo}" th:classappend="${#fields.hasErrors('usuario.ativo')} ? 'is-invalid'"/>
 							<div class="invalid-feedback">
 								<span th:errors="*{usuario.caixaVirtual}"></span>
 							</div>

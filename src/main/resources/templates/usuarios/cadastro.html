@@ -9,7 +9,7 @@
 				<h1 class="display-4">Cadastro de novo Usuário</h1>
 				<div th:replace="~{fragments/alert}"></div>
 <!--	            <form th:action="@{/usuarios/novo-usuario}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">-->
-				<form id="form-usuario" th:object="${modeloCadastroUsuarioPerfil}" method="post" th:action="@{/usuarios/novo-usuario}">
+				<form id="form-usuario" th:object="${modeloCadastroUsuarioPerfil}" th:action="@{/usuarios/novo-usuario}" method="post">
 	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label for="usuario-nomeCompleto">Nome Completo:</label>

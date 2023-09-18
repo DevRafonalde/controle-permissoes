@@ -9,7 +9,7 @@
 				<h1 class="display-4">Edição de Usuário</h1>
 				<div th:replace="~{fragments/alert}"></div>
 <!--	            <form th:action="@{/usuarios/editar}" th:object="${modeloCadastroUsuarioPerfil}" method="POST">-->
-				<form id="form-usuario" th:object="${modeloCadastroUsuarioPerfil}">
+				<form id="form-usuario" th:object="${modeloCadastroUsuarioPerfil}" th:action="@{/usuarios/editar}" method="post">
 	                <div class="row">
 	                    <div class="col-md-6">
 	                        <label for="usuario-nomeCompleto">Nome Completo:</label>
@@ -70,6 +70,7 @@
 	                </div>
 					<hr class="my-1" style="opacity: 0;">
 					<input type="hidden" id="usuario-id" th:field="*{usuario.id}">
+					<input type="hidden" id="usuario-senha" th:field="*{usuario.senhaUser}">
 					<input type="hidden" id="perfisUsuario" th:field="*{perfisUsuario}">
 					<div class="d-grid gap-2">
 						<button type="submit" class="btn btn-primary">Alterar</button>

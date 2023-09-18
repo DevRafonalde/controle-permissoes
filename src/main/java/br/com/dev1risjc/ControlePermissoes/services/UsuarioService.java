@@ -206,12 +206,8 @@ public class UsuarioService {
     }
 
     public List<Integer> getPerfisVinculadosId(Integer id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
-        UsuarioDTO usuarioDTO = mapper.map(usuario, UsuarioDTO.class);
-
+        usuarioRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Usuário não encontrado no banco de dados"));
         ModeloCadastroUsuarioPerfil modeloCadastroUsuarioPerfil = listarEspecifico(id);
-
-
         return modeloCadastroUsuarioPerfil.getPerfisUsuario()
                 .stream()
                 .map(PerfilDTO::getId)

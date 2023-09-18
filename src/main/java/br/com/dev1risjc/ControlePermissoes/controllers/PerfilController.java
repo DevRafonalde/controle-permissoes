@@ -101,6 +101,16 @@ public class PerfilController {
         return new ResponseEntity<>(usuariosVinculadosIds, HttpStatus.OK);
     }
 
+    @GetMapping("/get-todas-permissoes")
+    public ResponseEntity<List<PermissaoDTO>> getPerfis() {
+        return new ResponseEntity<>(perfilService.getPermissoes(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-permissoes-vinculadas/{id}")
+    public ResponseEntity<List<Integer>> getPerfisVinculados(@PathVariable Integer id) {
+        return new ResponseEntity<>(perfilService.getPermissoesVinculadasId(id), HttpStatus.OK);
+    }
+
     @PostMapping("/novo-perfil")
     public String novoPerfil(@Valid ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
@@ -162,11 +172,6 @@ public class PerfilController {
         final Integer permissaoPerfilId = Integer.valueOf(req.getParameter("removePermissao"));
         modeloCadastroPerfilPermissao.getPermissoesPerfil().remove(permissaoPerfilId.intValue());
         return "perfis/edicao";
-    }
-
-    @ModelAttribute("permissoes")
-    public List<PermissaoDTO> getPermissoes() {
-        return perfilService.getPermissoes();
     }
 
     @ModelAttribute("sistemas")

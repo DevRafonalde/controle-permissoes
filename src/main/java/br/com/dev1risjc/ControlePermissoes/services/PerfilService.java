@@ -9,6 +9,7 @@ import br.com.dev1risjc.ControlePermissoes.models.entities.orm.*;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilPermissao;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuario;
 import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroPerfilUsuarioId;
+import br.com.dev1risjc.ControlePermissoes.models.entities.view.ModeloCadastroUsuarioPerfil;
 import br.com.dev1risjc.ControlePermissoes.models.repositories.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -247,6 +248,15 @@ public class PerfilService {
         return sistemas.stream()
                 .sorted(Comparator.comparing(Sistema::getNome))
                 .map(sistema -> mapper.map(sistema, SistemaDTO.class))
+                .toList();
+    }
+
+    public List<Integer> getPermissoesVinculadasId(Integer id) {
+        perfilRepository.findById(id).orElseThrow(() -> new ElementoNaoEncontradoException("Perfil não encontrado no banco de dados"));
+        ModeloCadastroPerfilPermissao modeloCadastroPerfilPermissao = listarEspecifico(id);
+        return modeloCadastroPerfilPermissao.getPermissoesPerfil()
+                .stream()
+                .map(PermissaoDTO::getId)
                 .toList();
     }
 }
